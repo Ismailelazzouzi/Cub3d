@@ -92,24 +92,27 @@ void	parse_file(char *av1, t_data *data)
 {
 	int	fd;
 	char	*line;
+	char	*trimmed_line;
 
 	fd = open(av1, O_RDONLY);
 	if (fd < 0)
 		printf("FILE DZEB HADA!\n"), exit(1);
 	while ((line = get_next_line(fd)) != NULL)
 	{
-		if (line[0] == 'N' && line[1] == 'O' && line[2] == ' ')
-			data->no = ft_strdup(line + 3);
-		else if ((line[0] == 'S' && line[1] == 'O' && line[2] == ' '))
-			data->so = ft_strdup(line + 3);
-		else if (line[0] == 'E' && line[1] == 'A' && line[2] == ' ')
-			data->ea = ft_strdup(line + 3);
-		else if (line[0] == 'W' && line[1] == 'E' && line[2] == ' ')
-			data->we = ft_strdup(line + 3);
-		else if (line[0] == 'C' && line[1] == ' ')
-			parse_colors(line + 2, data->c);
-		else if (line[0] == 'F' && line[1] == ' ')
-			parse_colors(line + 2, data->f);
+		trimmed_line = ft_strtrim(line, "\n \t	");
+		if (trimmed_line[0] == 'N' && trimmed_line[1] == 'O' && trimmed_line[2] == ' ')
+			data->no = ft_strdup(trimmed_line + 3);
+		else if ((trimmed_line[0] == 'S' && trimmed_line[1] == 'O' && trimmed_line[2] == ' '))
+			data->so = ft_strdup(trimmed_line + 3);
+		else if (trimmed_line[0] == 'E' && trimmed_line[1] == 'A' && trimmed_line[2] == ' ')
+			data->ea = ft_strdup(trimmed_line + 3);
+		else if (trimmed_line[0] == 'W' && trimmed_line[1] == 'E' && trimmed_line[2] == ' ')
+			data->we = ft_strdup(trimmed_line + 3);
+		else if (trimmed_line[0] == 'C' && trimmed_line[1] == ' ')
+			parse_colors(trimmed_line + 2, data->c);
+		else if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
+			parse_colors(trimmed_line + 2, data->f);
+		free(trimmed_line);
 		free(line);
 	}
 	close(fd);
@@ -126,6 +129,6 @@ int main(int argc, char **argv)
 	init_game_data(&data);
 	parse_file(argv[1], &data);
 	// testing
-	printf("%s%s%s%s%d\n%d\n", data.no, data.so, data.ea, data.we, data.c[0], data.f[0]);
+	printf("%s\n%s\n%s\n%s\n%d\n%d\n", data.no, data.so, data.ea, data.we, data.c[0], data.f[0]);
 	return (0);
 }
