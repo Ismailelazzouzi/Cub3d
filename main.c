@@ -95,7 +95,6 @@ int	get_rows(char *av)
 {
 	int	fd;
 	char	*line;
-	char	*trimmed_line;
 	int		rows;
 
 	rows = 0;
@@ -105,11 +104,9 @@ int	get_rows(char *av)
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
-		trimmed_line = ft_strtrim(line, " \n	");
-		if (trimmed_line[0] == '1')
+		if (line[0] == '1')
 			break;
 		free(line);
-		free(trimmed_line);
 		line = get_next_line(fd);
 	}
 	while (line != NULL)
@@ -183,7 +180,7 @@ void	parse_file(char *av1, t_data *data)
 		else if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
 			parse_colors(trimmed_line + 2, data->f);
 		else if (trimmed_line[0] == '1')
-			parse_map(line, fd, data, av1);
+			parse_map(trimmed_line, fd, data, av1);
 		free(trimmed_line);
 		free(line);
 	}
