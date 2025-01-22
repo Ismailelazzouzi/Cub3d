@@ -145,6 +145,19 @@ void	parse_map(t_data *data, char *av1)
 		printf("%s", matrix[i]);
 }
 
+void	get_columns(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (data->maze[i] != NULL)
+	{
+		if (data->column_num < ft_strlen(data->maze[i]))
+			data->column_num = ft_strlen(data->maze[i]);
+		i++;
+	}
+}
+
 void	get_rows(char *av1, t_data *data)
 {
 	int	fd;
@@ -180,8 +193,6 @@ void	data_entry(char *line, t_data *data, int i)
 		parse_colors(trimmed_line + 2, data->c);
 	else if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
 		parse_colors(trimmed_line + 2, data->f);
-	else if (line[0] == '\n')
-		line[1] = '\0';
 	else
 		data->maze[i] = ft_strdup(line);
 	free(trimmed_line);
@@ -209,7 +220,52 @@ void	parse_file(char *av1, t_data *data)
 		free(line);
 	}
 	data->maze[i] = NULL;
+	get_columns(data);
 	close(fd);
+}
+
+int	ft_isspace(char c)
+{
+	if (c && (c >= 9 && c <= 13) || c == 32)
+		return (1);
+	return (0);
+}
+
+void	check_map(t_data *data)
+{
+	int	i;
+	int	j;
+	int holder;
+
+	i = 0;
+	j = 0;
+	while (i < data->rows_num)
+	{
+		j = 0;
+		while (j < ft_strlen(data->maze[i]))
+		{
+			holder = 0;
+			if (j == 0 && !ft_isalnum(data->maze[i][j]))
+			{
+				while (data->maze[i][j] != '\0' && !ft_isalnum(data->maze[i][j]))
+					j++;
+				holder = j;
+			}
+			if (i == 0 && (data->maze[i][j] != '1' && data->maze[i][j] != '\n'))
+				free_data(data, true);
+			if ((j == holder && data->maze[i][j] != '1') || ((j == ft_strlen(data->maze[i]) - 2) && data->maze[i][j] != '1'))
+				free_data(data, true);
+			if (ft_isalnum(data->maze[i][j]) && (data->maze[i][j] != '1' && data->maze[i][j] != '0' 
+				&& data->maze[i][j] != '\n' && data->maze[i][j] != ' '
+				&& data->maze[i][j] != 'N' && data->maze[i][j] != 'E'
+				&& data->maze[i][j] != 'W' && data->maze[i][j] != 'S'))
+				free_data(data, true);
+			if (i == data->rows_num -1 && (data->maze[i][j] != '1' && !ft_isspace(data->maze[i][j])))
+				free_data(data, true);
+			j++;
+		}
+		i++;
+	}
 }
 
 void	check_input(t_data *data)
@@ -239,6 +295,7 @@ void	check_input(t_data *data)
 	}
 	while (i >= 0)
 		close(fd[i--]);
+	check_map(data);
 }
 
 int main(int argc, char **argv)
@@ -251,6 +308,7 @@ int main(int argc, char **argv)
 		check_extention(argv[1], ".cub", false, &data);
 	init_game_data(&data);
 	parse_file(argv[1], &data);
+	int i = 0;
 	check_input(&data);
 	return (0);
 }
