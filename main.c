@@ -53,8 +53,9 @@ void	check_extention(char *filename, char *ext, bool flag, t_data *data)
 	}
 }
 
-void	init_game_data(t_data *data)
+void	init_game_data(t_data *data, t_player *player)
 {
+	data->player = player;
 	data->no = NULL;
 	data->so = NULL;
 	data->ea = NULL;
@@ -216,6 +217,13 @@ int	ft_isspace(char c)
 	return (0);
 }
 
+int	isplayer(char c)
+{
+	if (c == 'E' || c == 'N' || c == 'W' || c == 'S')
+		return (1);
+	return (0);
+}
+
 void	check_map_normed(t_data *data, int i, int j, int holder)
 {
 	static int	playercount;
@@ -223,21 +231,24 @@ void	check_map_normed(t_data *data, int i, int j, int holder)
 	if (i == 0 && (data->maze[i][j] != '1' && data->maze[i][j] != '\n'))
 		free_data(data, true);
 	if ((j == holder && data->maze[i][j] != '1')
-		|| ((j == ft_strlen(data->maze[i]) - 2)
+	|| ((j == ft_strlen(data->maze[i]) - 2)
 		&& data->maze[i][j] != '1'))
 		free_data(data, true);
 	if (ft_isalnum(data->maze[i][j]) && (data->maze[i][j] != '1' 
-		&& data->maze[i][j] != '0' 
-		&& data->maze[i][j] != '\n' && data->maze[i][j] != ' '
+		&& data->maze[i][j] != '0' && data->maze[i][j] != '\n'
+		&& data->maze[i][j] != ' '
 		&& data->maze[i][j] != 'N' && data->maze[i][j] != 'E'
 		&& data->maze[i][j] != 'W' && data->maze[i][j] != 'S'))
 		free_data(data, true);
 	if (i == data->rows_num -1 && (data->maze[i][j] != '1'
 		&& !ft_isspace(data->maze[i][j])))
 		free_data(data, true);
-	if (data->maze[i][j] == 'E' || data->maze[i][j] == 'N'
-		|| data->maze[i][j] == 'W' || data->maze[i][j] == 'S')
+	if (isplayer(data->maze[i][j]))
+	{
 		playercount++;
+		data->player->player_x = j;
+		data->player->player_y = i;
+	}
 	if (playercount > 1)
 		free_data(data, true);
 }
@@ -306,13 +317,14 @@ void	check_input(t_data *data)
 
 int	main(int argc, char **argv)
 {
-	t_data	data;
+	t_data		data;
+	t_player	player;
 
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
 		check_extention(argv[1], ".cub", false, &data);
-	init_game_data(&data);
+	init_game_data(&data, &player);
 	parse_file(argv[1], &data);
 	check_input(&data);
 	return (0);

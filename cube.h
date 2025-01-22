@@ -22,17 +22,24 @@
 # include "Libft/libft.h"
 # include "get_next_line.h"
 
+typedef struct s_player
+{
+	int	player_x;
+	int	player_y;
+}	t_player;
+
 typedef struct s_data
 {
-	char	*no;
-	char	*so;
-	char	*ea;
-	char	*we;
-	char	**maze;
-	int		c[3];
-	int		f[3];
-	int		rows_num;
-	int		column_num;
+	struct s_player	*player;
+	char			*no;
+	char			*so;
+	char			*ea;
+	char			*we;
+	char			**maze;
+	int				c[3];
+	int				f[3];
+	int				rows_num;
+	int				column_num;
 }	t_data;
 
 #endif
