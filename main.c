@@ -12,6 +12,13 @@
 
 #include "cube.h"
 
+void	err(char *str)
+{
+	while (*str)
+		write(2, str++, 1);
+	exit(1);
+}
+
 void	free_data(t_data *data, bool flag)
 {
 	int	i;
@@ -53,7 +60,57 @@ void	check_extention(char *filename, char *ext, bool flag, t_data *data)
 	}
 }
 
-void	init_game_data(t_data *data, t_player *player)
+void	get_rows(t_data *data, char *av1)
+{
+	char	*line;
+	int		fd;
+
+	fd = open(av1, O_RDONLY);
+	if (fd < 0)
+		err("open failed!\n");
+	line = get_next_line(fd);
+	if (!line)
+		err("failed get_next_line!\n");
+	while (line != NULL)
+	{
+		if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
+			&& line[0] != '\n' && line[0] != 'C' && line[0] != 'F')
+			data->rows_num++;
+		free(line);
+		line = get_next_line(fd);
+	}
+	close(fd);
+}
+
+void	get_columns(t_data *data, char *av1)
+{
+	char	*line;
+	char	*trimmed_line;
+	int		fd;
+
+	fd = open(av1, O_RDONLY);
+	if (fd < 0)
+		err("open failed!\n");
+	line = get_next_line(fd);
+	if (!line)
+		err("failed get_next_line!\n");
+	while (line != NULL)
+	{
+		trimmed_line = ft_strtrim(line, " \t\v\f\r\n");
+		if (trimmed_line[0] != 'N' && trimmed_line[0] != 'S'
+			&& trimmed_line[0] != 'E' && trimmed_line[0] != 'W'
+			&& trimmed_line[0] != '\n' && trimmed_line[0] != 'C'
+			&& trimmed_line[0] != 'F')
+			if (data->column_num < ft_strlen(trimmed_line))
+				data->column_num = ft_strlen(trimmed_line);
+		free(line);
+		free(trimmed_line);
+		line = get_next_line(fd);
+	}
+	close(fd);
+}
+
+void	init_game_data(t_data *data, t_player *player, char *av1)
 {
 	data->player = player;
 	data->no = NULL;
@@ -65,6 +122,8 @@ void	init_game_data(t_data *data, t_player *player)
 	data->column_num = 0;
 	ft_memset(&data->c, 0, sizeof(data->c));
 	ft_memset(&data->f, 0, sizeof(data->c));
+	get_columns(data, av1);
+	get_rows(data, av1);
 }
 
 void	free_splitted(char **splitted, bool flag)
@@ -83,13 +142,6 @@ void	free_splitted(char **splitted, bool flag)
 		printf("LAYN3ALTABONMHOM COLORS\n");
 		exit(1);
 	}
-}
-
-void	err(char *str)
-{
-	while (*str)
-		write(2, str++, 1);
-	exit(1);
 }
 
 void	parse_colors(char *line, int col[3])
@@ -117,41 +169,6 @@ void	parse_colors(char *line, int col[3])
 	if (i != 3)
 		flag = true;
 	free_splitted(splitted, flag);
-}
-
-void	get_columns(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (data->maze[i] != NULL)
-	{
-		if (data->column_num < ft_strlen(data->maze[i]))
-			data->column_num = ft_strlen(data->maze[i]);
-		i++;
-	}
-}
-
-void	get_rows(char *av1, t_data *data)
-{
-	char	*line;
-	int		fd;
-
-	fd = open(av1, O_RDONLY);
-	if (fd < 0)
-		err("open failed!\n");
-	line = get_next_line(fd);
-	if (!line)
-		err("failed get_next_line!\n");
-	while (line != NULL)
-	{
-		if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
-			&& line[0] != '\n' && line[0] != 'C' && line[0] != 'F')
-			data->rows_num++;
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
 }
 
 void	data_entry(char *line, t_data *data, int *i)
@@ -188,9 +205,10 @@ void	parse_file(char *av1, t_data *data)
 	char	*line;
 	int		fd;
 	int		i;
+	int		j;
 
 	i = 0;
-	get_rows(av1, data);
+	j = 0;
 	data->maze = malloc((data->rows_num + 1) * sizeof(char *));
 	if (!data->maze)
 		err("malloc fail!\n");
@@ -204,9 +222,9 @@ void	parse_file(char *av1, t_data *data)
 		data_entry(line, data, &i);
 		free(line);
 		line = get_next_line(fd);
+		j++;
 	}
 	data->maze[i] = NULL;
-	get_columns(data);
 	close(fd);
 }
 
@@ -324,8 +342,9 @@ int	main(int argc, char **argv)
 		err("wrong number of args\n");
 	if (argv[1])
 		check_extention(argv[1], ".cub", false, &data);
-	init_game_data(&data, &player);
+	init_game_data(&data, &player, argv[1]);
 	parse_file(argv[1], &data);
 	check_input(&data);
+	printf("%d\n%d\n", data.rows_num, data.column_num);
 	return (0);
 }
