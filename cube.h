@@ -24,8 +24,9 @@
 
 typedef struct s_player
 {
-	int	player_x;
-	int	player_y;
+	char	player_id;
+	int		player_x;
+	int		player_y;
 }	t_player;
 
 typedef struct s_data

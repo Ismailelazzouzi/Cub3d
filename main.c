@@ -236,6 +236,13 @@ int	isplayer(char c)
 	return (0);
 }
 
+void	process_player(t_data *data, int i, int j)
+{
+	data->player->player_x = i;
+	data->player->player_y = j;
+	data->player->player_id = data->maze[i][j];
+}
+
 void	check_map_normed(t_data *data, int i, int j, int holder)
 {
 	static int	playercount;
@@ -258,11 +265,62 @@ void	check_map_normed(t_data *data, int i, int j, int holder)
 	if (isplayer(data->maze[i][j]))
 	{
 		playercount++;
-		data->player->player_x = i;
-		data->player->player_y = j;
+		process_player(data, i, j);
 	}
 	if (playercount > 1)
 		free_data(data, true);
+}
+
+int	playerpos(char c, char *set)
+{
+	while (*set)
+	{
+		if (*set == c)
+			return (1);
+		set++;
+	}
+	return (0);
+}
+
+void	sweep_floor(t_data *data, char **tmp, int i, int j)
+{
+	while (j < ft_strlen(tmp[i]) - 1)
+	{
+		if (tmp[i][j] == '0' || playerpos(tmp[i][j], "NSEW"))
+		{
+			if (tmp[i][j - 1] == ' ' || tmp[i][j + 1] == ' ' ||
+				tmp[i - 1][j] == ' ' || tmp[i + 1][j] == ' ' ||
+				tmp[i - 1][j - 1] == ' ' || tmp[i - 1][j + 1] == ' ' ||
+				tmp[i + 1][j - 1] == ' ' || tmp[i + 1][j + 1] == ' ')
+				free_data(data, true);
+		}
+		j++;
+	}
+}
+
+void	check_holes(t_data *data)
+{
+	char	**tmp;
+	int		i;
+	int		j;
+
+	i = 0;
+	tmp = malloc((data->rows_num + 1) * sizeof(char *));
+	if (!tmp)
+		free_data(data, true);
+	while (i < data->rows_num)
+	{
+		tmp[i] = ft_strtrim(data->maze[i], " \t\v\f\r\n");
+		i++;
+	}
+	tmp[i] = NULL;
+	i = 0;
+	while (tmp[i] != NULL)
+	{
+		j = 0;
+		sweep_floor(data, tmp, i, j);
+		i++;
+	}
 }
 
 void	check_map(t_data *data)
@@ -291,6 +349,7 @@ void	check_map(t_data *data)
 		}
 		i++;
 	}
+	check_holes(data);
 }
 
 void	extention_check(t_data *data)
@@ -309,6 +368,7 @@ void	check_input(t_data *data)
 	i = 0;
 	if (!data->so || !data->no || !data->ea || !data->we)
 		free_data(data, true);
+	extention_check(data);
 	fd[0] = open(data->no, O_RDONLY);
 	fd[1] = open(data->so, O_RDONLY);
 	fd[2] = open(data->ea, O_RDONLY);
