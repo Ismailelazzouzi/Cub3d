@@ -37,10 +37,7 @@ void	free_data(t_data *data, bool flag)
 	if (data->maze)
 		free(data->maze);
 	if (flag == true)
-	{
-		printf("INVALID INPUT\n");
-		exit(1);
-	}
+		err("INVALID INPUT!");
 }
 
 void	check_extention(char *filename, char *ext, bool flag, t_data *data)
@@ -53,7 +50,7 @@ void	check_extention(char *filename, char *ext, bool flag, t_data *data)
 	filename = filename + (namelen - extlen);
 	if (ft_strncmp(filename, ext, extlen) != 0)
 	{
-		printf("SMYA GHALTA AL3ACHIR\n");
+		ft_putstr_fd("SMYA GHALTA AL3ACHIR\n", 2);
 		if (flag == true)
 			free_data(data, false);
 		exit(1);
@@ -138,10 +135,7 @@ void	free_splitted(char **splitted, bool flag)
 	}
 	free(splitted);
 	if (flag == true)
-	{
-		printf("LAYN3ALTABONMHOM COLORS\n");
-		exit(1);
-	}
+		err("invalid input!\n");
 }
 
 void	parse_colors(char *line, int col[3])
@@ -160,7 +154,7 @@ void	parse_colors(char *line, int col[3])
 		col[i] = ft_atoi(splitted[i]);
 		if (col[i] < 0 || col[i] > 255)
 		{
-			printf("AR9AM DZEBI HADO!!\n");
+			ft_putstr_fd("INVALID RGB VALUE!!\n", 1);
 			flag = true;
 			break ;
 		}
@@ -264,8 +258,8 @@ void	check_map_normed(t_data *data, int i, int j, int holder)
 	if (isplayer(data->maze[i][j]))
 	{
 		playercount++;
-		data->player->player_x = j;
-		data->player->player_y = i;
+		data->player->player_x = i;
+		data->player->player_y = j;
 	}
 	if (playercount > 1)
 		free_data(data, true);
@@ -345,6 +339,5 @@ int	main(int argc, char **argv)
 	init_game_data(&data, &player, argv[1]);
 	parse_file(argv[1], &data);
 	check_input(&data);
-	printf("%d\n%d\n", data.rows_num, data.column_num);
 	return (0);
 }
