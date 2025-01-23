@@ -186,10 +186,8 @@ void	data_entry(char *line, t_data *data, int *i)
 	// if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
 	// 	//parse_colors(data, trimmed_line + 2, data->f);
 	else
-	{
-		data->map_start = true;
 		data->maze[*i] = ft_strdup(line);
-	}
+
 	if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
 		&& line[0] != 'C' && line[0] != 'F')
 		(*i)++;
@@ -219,9 +217,8 @@ void	parse_file(char *av1, t_data *data)
 		line = get_next_line(fd);
 	}
 	data->maze[i] = NULL;
-	i = 0;
-	while (data->maze[i])
-		printf("%s", data->maze[i++]);
+	if (data->killflag == true)
+		free_data(data, true);
 	close(fd);
 }
 
@@ -271,7 +268,6 @@ void	check_input(t_data *data)
 	}
 	while (i >= 0)
 		close(fd[i--]);
-	//check_map(data);
 }
 
 int	main(int argc, char **argv)
@@ -286,5 +282,8 @@ int	main(int argc, char **argv)
 	init_game_data(&data, &player, argv[1]);
 	parse_file(argv[1], &data);
 	check_input(&data);
+	int	i = 0;
+	while (data.maze[i])
+		printf("%s", data.maze[i++]);
 	return (0);
 }
