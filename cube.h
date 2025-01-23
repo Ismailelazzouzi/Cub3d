@@ -39,8 +39,15 @@ typedef struct s_data
 	char			**maze;
 	int				c[3];
 	int				f[3];
+	int				fileheight;
 	int				rows_num;
 	int				column_num;
+	int				textures_num;
+	int				colors_num;
+	int				playercount;
+	bool			colors_passed;
+	bool			map_start;
+	bool			killflag;
 }	t_data;
 
 #endif
