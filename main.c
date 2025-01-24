@@ -26,11 +26,15 @@ int	ft_isspace(char c)
 	return (0);
 }
 
-void	free_data(t_data *data, bool flag)
+void	free_data(t_data *data, char **content ,bool flag)
 {
 	int	i;
+	int	contentlen;
 
 	i = 0;
+	contentlen = 0;
+	while (content && content[contentlen])
+		contentlen++;
 	if (data->so)
 		free(data->no);
 	if (data->so)
@@ -39,81 +43,64 @@ void	free_data(t_data *data, bool flag)
 		free(data->ea);
 	if (data->we)
 		free(data->we);
-	while (i < data->rows_num)
-		free(data->maze[i++]);
-	if (data->maze)
-		free(data->maze);
+	while (content && i < contentlen)
+		free(content[i++]);
+	if (content)
+		free(content);
 	if (flag == true)
 		err("INVALID INPUT! azabi\n");
 }
 
-void	check_extention(char *filename, char *ext, bool flag, t_data *data)
-{
-	int	namelen;
-	int	extlen;
+// void	get_rows(t_data *data, char *av1)
+// {
+// 	char	*line;
+// 	int		fd;
 
-	namelen = ft_strlen(filename);
-	extlen = ft_strlen(ext);
-	filename = filename + (namelen - extlen);
-	if (ft_strncmp(filename, ext, extlen) != 0)
-	{
-		ft_putstr_fd("SMYA GHALTA AL3ACHIR\n", 2);
-		if (flag == true)
-			free_data(data, false);
-		exit(1);
-	}
-}
+// 	fd = open(av1, O_RDONLY);
+// 	if (fd < 0)
+// 		err("open failed!\n");
+// 	line = get_next_line(fd);
+// 	if (!line)
+// 		err("failed get_next_line!\n");
+// 	while (line != NULL)
+// 	{
+// 		if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
+// 			&& line[0] != 'C' && line[0] != 'F')
+// 			data->rows_num++;
+// 		data->fileheight++;
+// 		free(line);
+// 		line = get_next_line(fd);
+// 	}
+// 	close(fd);
+// }
 
-void	get_rows(t_data *data, char *av1)
-{
-	char	*line;
-	int		fd;
+// void	get_columns(t_data *data, char *av1)
+// {
+// 	char	*line;
+// 	char	*trimmed_line;
+// 	int		fd;
 
-	fd = open(av1, O_RDONLY);
-	if (fd < 0)
-		err("open failed!\n");
-	line = get_next_line(fd);
-	if (!line)
-		err("failed get_next_line!\n");
-	while (line != NULL)
-	{
-		if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
-			&& line[0] != 'C' && line[0] != 'F')
-			data->rows_num++;
-		data->fileheight++;
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
-}
-
-void	get_columns(t_data *data, char *av1)
-{
-	char	*line;
-	char	*trimmed_line;
-	int		fd;
-
-	fd = open(av1, O_RDONLY);
-	if (fd < 0)
-		err("open failed!\n");
-	line = get_next_line(fd);
-	if (!line)
-		err("failed get_next_line!\n");
-	while (line != NULL)
-	{
-		trimmed_line = ft_strtrim(line, " \t\v\f\r\n");
-		if (trimmed_line[0] != 'N' && trimmed_line[0] != 'S'
-			&& trimmed_line[0] != 'E' && trimmed_line[0] != 'W'
-			&& trimmed_line[0] != '\n' && trimmed_line[0] != 'C'
-			&& trimmed_line[0] != 'F')
-			if (data->column_num < ft_strlen(trimmed_line))
-				data->column_num = ft_strlen(trimmed_line);
-		free(line);
-		free(trimmed_line);
-		line = get_next_line(fd);
-	}
-	close(fd);
-}
+// 	fd = open(av1, O_RDONLY);
+// 	if (fd < 0)
+// 		err("open failed!\n");
+// 	line = get_next_line(fd);
+// 	if (!line)
+// 		err("failed get_next_line!\n");
+// 	while (line != NULL)
+// 	{
+// 		trimmed_line = ft_strtrim(line, " \t\v\f\r\n");
+// 		if (trimmed_line[0] != 'N' && trimmed_line[0] != 'S'
+// 			&& trimmed_line[0] != 'E' && trimmed_line[0] != 'W'
+// 			&& trimmed_line[0] != '\n' && trimmed_line[0] != 'C'
+// 			&& trimmed_line[0] != 'F')
+// 			if (data->column_num < ft_strlen(trimmed_line))
+// 				data->column_num = ft_strlen(trimmed_line);
+// 		free(line);
+// 		free(trimmed_line);
+// 		line = get_next_line(fd);
+// 	}
+// 	close(fd);
+// }
 
 int	playerpos(char c, char *set)
 {
@@ -134,58 +121,57 @@ void	init_game_data(t_data *data, t_player *player, char *av1)
 	data->ea = NULL;
 	data->we = NULL;
 	data->maze = NULL;
+	data->map = NULL;
+	data->info = NULL;
 	data->map_begins = 0;
 	data->map_ends = 0;
 	data->rows_num = 0;
 	data->column_num = 0;
 	data->textures_num = 0;
 	data->colors_num = 0;
-	data->map_start = -1;
-	data->killflag = true;
-	data->shootflag = false;
 	data->playercount = 0;
+	data->killflag = false;
+	data->shootflag = false;
 	ft_memset(&data->c, 0, sizeof(data->c));
 	ft_memset(&data->f, 0, sizeof(data->c));
-	get_columns(data, av1);
-	get_rows(data, av1);
 }
 
-void	free_splitted(t_data *data, char **splitted, bool flag)
-{
-	int	i;
+// void	free_splitted(t_data *data, char **splitted, bool flag)
+// {
+// 	int	i;
 
-	i = 0;
-	while (splitted && splitted[i] && i < 3)
-	{
-		free(splitted[i]);
-		i++;
-	}
-	if (splitted)
-		free(splitted);
-	if (flag == true)
-		free_data(data, true);
-}
+// 	i = 0;
+// 	while (splitted && splitted[i] && i < 3)
+// 	{
+// 		free(splitted[i]);
+// 		i++;
+// 	}
+// 	if (splitted)
+// 		free(splitted);
+// 	if (flag == true)
+// 		free_data(data, true);
+// }
 
-void	parse_colors(t_data *data, char *col, int *color)
-{
-	char	**splitted;
-	int		i;
+// void	parse_colors(t_data *data, char *col, int *color)
+// {
+// 	char	**splitted;
+// 	int		i;
 
-	splitted = ft_split(col, ',');
-	if (!splitted)
-		free_data(data, true);
-	i = 0;
-	while (splitted && splitted[i] != NULL)
-	{
-		color[i] = ft_atoi(splitted[i]);
-		if (color[i] < 0 || color[i] > 255)
-			break ;
-		i++;
-	}
-	if (i != 3)
-		data->killflag = true;
-	free_splitted(data, splitted, false);
-}
+// 	splitted = ft_split(col, ',');
+// 	if (!splitted)
+// 		free_data(data, true);
+// 	i = 0;
+// 	while (splitted && splitted[i] != NULL)
+// 	{
+// 		color[i] = ft_atoi(splitted[i]);
+// 		if (color[i] < 0 || color[i] > 255)
+// 			break ;
+// 		i++;
+// 	}
+// 	if (i != 3)
+// 		data->killflag = true;
+// 	free_splitted(data, splitted, false);
+// }
 
 // int	check_texture(t_data *data, char *trimmed_line)
 // {
@@ -318,198 +304,190 @@ void	parse_colors(t_data *data, char *col, int *color)
 // 		free_data(data, true);
 // }
 
-int	isplayer(char c)
-{
-	if (c == 'E' || c == 'N' || c == 'W' || c == 'S')
-		return (1);
-	return (0);
-}
+// int	isplayer(char c)
+// {
+// 	if (c == 'E' || c == 'N' || c == 'W' || c == 'S')
+// 		return (1);
+// 	return (0);
+// }
 
-void	extention_check(t_data *data)
-{
-	check_extention(data->no, ".png", true, data);
-	check_extention(data->so, ".png", true, data);
-	check_extention(data->ea, ".png", true, data);
-	check_extention(data->we, ".png", true, data);
-}
+// void	process_player(t_data *data, int i, int j)
+// {
+// 	data->player->player_x = i;
+// 	data->player->player_y = j;
+// 	data->player->player_id = data->maze[i][j];
+// }
 
-void	process_player(t_data *data, int i, int j)
-{
-	data->player->player_x = i;
-	data->player->player_y = j;
-	data->player->player_id = data->maze[i][j];
-}
+// void	check_map_normed(t_data *data, int i, int j, int holder)
+// {
+// 	if (i == 0 && (data->maze[i][j] != '1' && data->maze[i][j] != '\n'))
+// 		free_data(data, true);
+// 	if ((j == holder && data->maze[i][j] != '1')
+// 	|| ((j == ft_strlen(data->maze[i]) - 2)
+// 		&& data->maze[i][j] != '1'))
+// 		free_data(data, true);
+// 	if (ft_isalnum(data->maze[i][j]) && (data->maze[i][j] != '1' 
+// 		&& data->maze[i][j] != '0' && data->maze[i][j] != '\n'
+// 		&& data->maze[i][j] != ' '
+// 		&& data->maze[i][j] != 'N' && data->maze[i][j] != 'E'
+// 		&& data->maze[i][j] != 'W' && data->maze[i][j] != 'S'))
+// 		free_data(data, true);
+// 	if (i == data->map_ends && (data->maze[i][j] != '1'
+// 		&& !ft_isspace(data->maze[i][j])))
+// 		free_data(data, true);
+// 	if (playerpos(data->maze[i][j], "NSWE"))
+// 	{
+// 		data->playercount++;
+// 		process_player(data, i, j);
+// 	}
+// 	if (data->playercount > 1)
+// 		free_data(data, true);
+// }
 
-void	check_map_normed(t_data *data, int i, int j, int holder)
-{
-	if (i == 0 && (data->maze[i][j] != '1' && data->maze[i][j] != '\n'))
-		free_data(data, true);
-	if ((j == holder && data->maze[i][j] != '1')
-	|| ((j == ft_strlen(data->maze[i]) - 2)
-		&& data->maze[i][j] != '1'))
-		free_data(data, true);
-	if (ft_isalnum(data->maze[i][j]) && (data->maze[i][j] != '1' 
-		&& data->maze[i][j] != '0' && data->maze[i][j] != '\n'
-		&& data->maze[i][j] != ' '
-		&& data->maze[i][j] != 'N' && data->maze[i][j] != 'E'
-		&& data->maze[i][j] != 'W' && data->maze[i][j] != 'S'))
-		free_data(data, true);
-	if (i == data->map_ends && (data->maze[i][j] != '1'
-		&& !ft_isspace(data->maze[i][j])))
-		free_data(data, true);
-	if (playerpos(data->maze[i][j], "NSWE"))
-	{
-		data->playercount++;
-		process_player(data, i, j);
-	}
-	if (data->playercount > 1)
-		free_data(data, true);
-}
+// void	check_map(t_data *data)
+// {
+// 	int	i;
+// 	int	j;
+// 	int	holder;
 
-void	check_map(t_data *data)
-{
-	int	i;
-	int	j;
-	int	holder;
+// 	i = data->map_begins;
+// 	j = 0;
+// 	while (i < data->map_ends + 1)
+// 	{
+// 		j = 0;
+// 		while (j < ft_strlen(data->maze[i]))
+// 		{
+// 			holder = 0;
+// 			if (j == 0 && !ft_isalnum(data->maze[i][j]))
+// 			{
+// 				while (data->maze[i][j] != '\0'
+// 					&& !ft_isalnum(data->maze[i][j]))
+// 					j++;
+// 				holder = j;
+// 			}
+// 			check_map_normed(data, i, j, holder);
+// 			if (i == data->map_ends && data->maze[i][j] != '1'
+// 				&& !ft_isspace(data->maze[i][j]))
+// 				free_data(data, true);
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// }
 
-	i = data->map_begins;
-	j = 0;
-	while (i < data->map_ends + 1)
-	{
-		j = 0;
-		while (j < ft_strlen(data->maze[i]))
-		{
-			holder = 0;
-			if (j == 0 && !ft_isalnum(data->maze[i][j]))
-			{
-				while (data->maze[i][j] != '\0'
-					&& !ft_isalnum(data->maze[i][j]))
-					j++;
-				holder = j;
-			}
-			check_map_normed(data, i, j, holder);
-			if (i == data->map_ends && data->maze[i][j] != '1'
-				&& !ft_isspace(data->maze[i][j]))
-				free_data(data, true);
-			j++;
-		}
-		i++;
-	}
-}
+// void	verify_map(t_data *data)
+// {
+// 	int	i;
+// 	int	j;
+// 	int	holder;
 
-void	verify_map(t_data *data)
-{
-	int	i;
-	int	j;
-	int	holder;
-
-	i = 0;
-	j = 0;
-	while (i < data->map_begins - 1)
-	{
-		j = 0;
-		while (data->maze[i][j])
-		{
-			if (i < data->map_begins)
-			{
-				if (!ft_isspace(data->maze[i][j]))
-					free_data(data, true);
-			}
-			j++;
-		}
-		i++;
-	}
-	check_map(data);
-}
+// 	i = 0;
+// 	j = 0;
+// 	while (i < data->map_begins - 1)
+// 	{
+// 		j = 0;
+// 		while (data->maze[i][j])
+// 		{
+// 			if (i < data->map_begins)
+// 			{
+// 				if (!ft_isspace(data->maze[i][j]))
+// 					free_data(data, true);
+// 			}
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// 	check_map(data);
+// }
 
 
-void	get_map(t_data *data)
-{
-	int	i;
-	int j;
+// void	get_map(t_data *data)
+// {
+// 	int	i;
+// 	int j;
 
-	i = data->map_begins;
-	while (data->maze[i] != NULL)
-	{
-		j = 0;
-			while (j < ft_strlen(data->maze[i]))
-				j++;
-		i++;
-	}
-	while (--i >= data->map_begins)
-	{
-		j = 0;
-		while (j < ft_strlen(data->maze[i]))
-		{
-			if (j == 0 && data->maze[i][j] == '1')
-			{
-				break ;
-			}
-			j++;
-		}
-		if (j != ft_strlen(data->maze[i]))
-			break;
-	}
-	data->map_ends = i;
-	data->rows_num = data->map_ends - data->map_begins + 1;
-	verify_map(data);
-}
+// 	i = data->map_begins;
+// 	while (data->maze[i] != NULL)
+// 	{
+// 		j = 0;
+// 			while (j < ft_strlen(data->maze[i]))
+// 				j++;
+// 		i++;
+// 	}
+// 	while (--i >= data->map_begins)
+// 	{
+// 		j = 0;
+// 		while (j < ft_strlen(data->maze[i]))
+// 		{
+// 			if (j == 0 && data->maze[i][j] == '1')
+// 			{
+// 				break ;
+// 			}
+// 			j++;
+// 		}
+// 		if (j != ft_strlen(data->maze[i]))
+// 			break;
+// 	}
+// 	data->map_ends = i;
+// 	data->rows_num = data->map_ends - data->map_begins + 1;
+// 	verify_map(data);
+// }
 
-void	check_order(t_data *data)
-{
-	int	i;
-	int	j;
+// void	check_order(t_data *data)
+// {
+// 	int	i;
+// 	int	j;
 
-	i = 0;
-	while (data->maze[i] && data->killflag == true)
-	{
-		j = 0;
-		while (data->maze[i][j] != '\0')
-		{
-			if (!ft_isspace(data->maze[i][j]))
-			{
-				if (data->maze[i][j] == '1')
-				{
-					data->killflag = false;
-					break ;
-				}
-			}
-			j++;
-		}
-		i++;
-	}
-	data->map_begins = i;
-	data->killflag = true;
-	get_map(data);
-}	
+// 	i = 0;
+// 	while (data->maze[i] && data->killflag == true)
+// 	{
+// 		j = 0;
+// 		while (data->maze[i][j] != '\0')
+// 		{
+// 			if (!ft_isspace(data->maze[i][j]))
+// 			{
+// 				if (data->maze[i][j] == '1')
+// 				{
+// 					data->killflag = false;
+// 					break ;
+// 				}
+// 			}
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// 	data->map_begins = i;
+// 	data->killflag = true;
+// 	//get_map(data);
+//}	
 
-void	check_input(t_data *data)
-{
-	int	fd[4];
-	int	i;
+// void	check_input(t_data *data)
+// {
+// 	int	fd[4];
+// 	int	i;
 
-	i = 0;
-	if (!data->so || !data->no || !data->ea || !data->we
-		|| data->textures_num != 4 || data->colors_num != 2)
-		free_data(data, true);
-	extention_check(data);
-	fd[0] = open(data->no, O_RDONLY);
-	fd[1] = open(data->so, O_RDONLY);
-	fd[2] = open(data->ea, O_RDONLY);
-	fd[3] = open(data->we, O_RDONLY);
-	while (i < 4)
-	{
-		if (fd[i] < 0)
-		{
-			free_data(data, true);
-			break ;
-		}
-		i++;
-	}
-	while (i >= 0)
-		close(fd[i--]);
-	check_order(data);
-}
+// 	i = 0;
+// 	if (!data->so || !data->no || !data->ea || !data->we
+// 		|| data->textures_num != 4 || data->colors_num != 2)
+// 		free_data(data, true);
+// 	extention_check(data);
+// 	fd[0] = open(data->no, O_RDONLY);
+// 	fd[1] = open(data->so, O_RDONLY);
+// 	fd[2] = open(data->ea, O_RDONLY);
+// 	fd[3] = open(data->we, O_RDONLY);
+// 	while (i < 4)
+// 	{
+// 		if (fd[i] < 0)
+// 		{
+// 			free_data(data, true);
+// 			break ;
+// 		}
+// 		i++;
+// 	}
+// 	while (i >= 0)
+// 		close(fd[i--]);
+// 	check_order(data);
+// }
 
 int	get_file_height(char *av1)
 {
@@ -538,20 +516,206 @@ void	get_file_content(t_data *data, char *av1)
 	int		len;
 	int		i;
 
-	len = get_file_height(av1);
+	data->fileheight = get_file_height(av1);
 	fd = open(av1, O_RDONLY);
-	data->maze = malloc((len + 1) * sizeof(char *));
+	data->maze = malloc((data->fileheight + 1) * sizeof(char *));
 	if (!fd)
 		err("FD DZEB!\n");
 	line = get_next_line(fd);
+	if (!line)
+		err("malloc fail");
 	i = 0;
 	while (line != NULL)
 	{
 		data->maze[i] = ft_strdup(line);
 		free(line);
 		line = get_next_line(fd);
+		i++;
 	}
 	data->maze[i] = NULL;
+}
+
+void	get_info(t_data *data)
+{
+	char	*trimmed_line;
+	int	i;
+
+	i = 0;
+	data->info = malloc(data->map_begins * sizeof(char *));
+	if (!data->info)
+	{
+		free_data(data, data->map, false);
+		free_data(data, data->maze, true);
+	}
+	while (i < data->map_begins)
+	{
+		trimmed_line = ft_strtrim(data->maze[i], " \t\v\f\r\n");
+		data->info[i] = ft_strdup(trimmed_line);
+		free(trimmed_line);
+		i++;
+	}
+	data->info[i] = NULL;
+	free_data(data, data->maze, false);
+}
+
+void	check_order(t_data *data)
+{
+	int	i;
+	int	j;
+
+	i = data->map_ends + 1;
+	while (data->maze[i])
+	{
+		j = 0;
+		while (j < ft_strlen(data->maze[i]))
+		{
+			if (!ft_isspace(data->maze[i][j]))
+				free_data(data, data->maze, true);
+			j++;
+		}
+		i++;
+	}
+	data->map = malloc(data->rows_num * sizeof(char *));
+	if (!data->map)
+		free_data(data, data->maze, true);
+	i = data->map_begins;
+	j = 0;
+	while (i < data->map_ends)
+	{
+		data->map[j] = ft_strdup(data->maze[i]);
+		i++;
+	}
+	data->map[j] = NULL;
+	get_info(data);
+}
+
+void	check_file_content(t_data *data)
+{
+	int	len;
+	int	i;
+	char	*trimmed_line;
+
+	len = data->fileheight - 1;
+	while (len >= 0)
+	{
+		trimmed_line = ft_strtrim(data->maze[len], " \t\v\f\r\n");
+		if (trimmed_line[0] == '1')
+		{
+			data->map_ends = len;
+			free(trimmed_line);
+			break ;
+		}
+		free(trimmed_line);
+		len--;
+	}
+	i = 0;
+	while (i < data->map_ends)
+	{
+		trimmed_line = ft_strtrim(data->maze[i], " \t\v\f\r\n");
+		if (trimmed_line[0] == '1')
+		{
+			data->map_begins = i;
+			free(trimmed_line);
+			break ;
+		}
+		free(trimmed_line);
+		i++;
+	}
+	data->rows_num = data->map_ends - data->map_begins + 1;
+	check_order(data);
+}
+
+void	free_splitted(t_data *data, char **splitted)
+{
+	int	i;
+
+	i = 0;
+	while (splitted && splitted[i] && i < 3)
+	{
+		free(splitted[i]);
+		i++;
+	}
+	if (splitted)
+		free(splitted);
+}
+
+void	parse_colors(t_data *data, char *col, int *color)
+{
+	char	**splitted;
+	int		i;
+
+	splitted = ft_split(col, ',');
+	if (!splitted)
+	{
+		free_data(data, data->map, false);
+		free_data(data, data->maze, false);
+		free_data(data, data->info, true);
+	}
+	i = 0;
+	while (splitted && splitted[i] != NULL)
+	{
+		color[i] = ft_atoi(splitted[i]);
+		i++;
+	}
+	free_splitted(data, splitted);
+}
+
+void	check_extention(char *filename, char *ext, bool flag, t_data *data)
+{
+	int	namelen;
+	int	extlen;
+
+	namelen = ft_strlen(filename);
+	extlen = ft_strlen(ext);
+	filename = filename + (namelen - extlen);
+	if (ft_strncmp(filename, ext, extlen) != 0)
+	{
+		ft_putstr_fd("SMYA GHALTA AL3ACHIR\n", 2);
+		if (flag == true)
+			free_data(data, NULL, false);
+		exit(1);
+	}
+}
+
+void	info_check(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (data->info[i])
+	{
+		if ((data->info[i][0] == 'N' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
+			|| (data->info[i][0] == 'S' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
+			|| (data->info[i][0] == 'W' && data->info[i][1] == 'E' && data->info[i][2] == ' ')
+			|| (data->info[i][0] == 'E' && data->info[i][1] == 'A' && data->info[i][2] == ' '))
+			data->textures_num++;
+		if ((data->info[i][0] == 'C' && data->info[i][1] == ' ')
+			|| (data->info[i][0] == 'F' && data->info[i][1] == ' '))
+			data->colors_num++;
+		if (data->info[i][0] == 'N' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
+			data->no = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
+		if (data->info[i][0] == 'S' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
+			data->so = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
+		if (data->info[i][0] == 'W' && data->info[i][1] == 'E' && data->info[i][2] == ' ')
+			data->we = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
+		if (data->info[i][0] == 'E' && data->info[i][1] == 'A' && data->info[i][2] == ' ')
+			data->no = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
+		if (data->info[i][0] == 'C' && data->info[i][1] == ' ')
+			parse_colors(data, data->info[i] + 2, data->c);
+		if (data->info[i][0] == 'F' && data->info[i][1] == ' ')
+			parse_colors(data, data->info[i] + 2, data->f);
+		i++;
+	}
+	if (data->colors_num != 2 || data->textures_num != 4)
+		data->killflag = true;
+}
+
+void	check_data_validity(t_data *data)
+{
+	info_check(data);
+	if (data->killflag == true)
+		free_data(data, data->info, true);
+
 }
 
 int	main(int argc, char **argv)
@@ -565,13 +729,14 @@ int	main(int argc, char **argv)
 		check_extention(argv[1], ".cub", false, &data);
 	init_game_data(&data, &player, argv[1]);
 	get_file_content(&data, argv[1]);
+	check_file_content(&data);
+	check_data_validity(&data);
 	// parse_file(argv[1], &data);
-	check_input(&data);
+	//check_input(&data);
 	// int	i = 0;
-	// while (i < data.rows_num)
+	// while (data.maze[i])
 	// {
-	// 	printf("%s", data.maze[data.map_begins]);
-	// 	data.map_begins++;
+	// 	printf("%s", data.maze[i]);
 	// 	i++;
 	// }
 	return (0);

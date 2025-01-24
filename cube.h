@@ -32,11 +32,13 @@ typedef struct s_player
 typedef struct s_data
 {
 	struct s_player	*player;
+	char			**maze;
+	char			**map;
+	char			**info;
 	char			*no;
 	char			*so;
 	char			*ea;
 	char			*we;
-	char			**maze;
 	int				c[3];
 	int				f[3];
 	int				fileheight;
