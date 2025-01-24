@@ -45,8 +45,10 @@ typedef struct s_data
 	int				textures_num;
 	int				colors_num;
 	int				playercount;
-	bool			colors_passed;
-	bool			map_start;
+	int				map_start;
+	int				map_begins;
+	int				map_ends;
+	bool			shootflag;
 	bool			killflag;
 }	t_data;
 

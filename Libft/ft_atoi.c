@@ -38,5 +38,7 @@ int	ft_atoi(const char *str)
 		else if ((result >= 9223372036854775807) && sign == 1)
 			return (-1);
 	}
+	if (str[i] != '\0')
+		return (-1);
 	return (ret = result, ret * sign);
 }

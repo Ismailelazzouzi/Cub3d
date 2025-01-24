@@ -19,6 +19,13 @@ void	err(char *str)
 	exit(1);
 }
 
+int	ft_isspace(char c)
+{
+	if ((c >= 9 && c <= 13) || c == 32)
+		return (1);
+	return (0);
+}
+
 void	free_data(t_data *data, bool flag)
 {
 	int	i;
@@ -127,12 +134,15 @@ void	init_game_data(t_data *data, t_player *player, char *av1)
 	data->ea = NULL;
 	data->we = NULL;
 	data->maze = NULL;
+	data->map_begins = 0;
+	data->map_ends = 0;
 	data->rows_num = 0;
 	data->column_num = 0;
 	data->textures_num = 0;
 	data->colors_num = 0;
-	data->map_start = false;
-	data->killflag = false;
+	data->map_start = -1;
+	data->killflag = true;
+	data->shootflag = false;
 	data->playercount = 0;
 	ft_memset(&data->c, 0, sizeof(data->c));
 	ft_memset(&data->f, 0, sizeof(data->c));
@@ -145,89 +155,168 @@ void	free_splitted(t_data *data, char **splitted, bool flag)
 	int	i;
 
 	i = 0;
-	while (i < 3)
+	while (splitted && splitted[i] && i < 3)
 	{
 		free(splitted[i]);
 		i++;
 	}
-	free(splitted);
+	if (splitted)
+		free(splitted);
 	if (flag == true)
 		free_data(data, true);
 }
 
-void	data_entry(char *line, t_data *data, int *i)
+void	parse_colors(t_data *data, char *col, int *color)
 {
-	char	**tmp;
-	char	*trimmed_line;
-
-	trimmed_line = ft_strtrim(line, " \t\v\f\r\n");
-	if (((trimmed_line[0] == 'N' && trimmed_line[1] == 'O' && trimmed_line[2] == ' ')
-		|| (trimmed_line[0] == 'S' && trimmed_line[1] == 'O' && trimmed_line[2] == ' ')
-		|| (trimmed_line[0] == 'E' && trimmed_line[1] == 'A' && trimmed_line[2] == ' ')
-		|| (trimmed_line[0] == 'W' && trimmed_line[1] == 'E' && trimmed_line[2] == ' ')))
-		data->textures_num++;
-	if (((trimmed_line[0] == 'C' && trimmed_line[1] == ' ')
-		|| (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')))
-		data->colors_num++;
-	if (trimmed_line[0] == 'N' && trimmed_line[1] == 'O'
-		&& trimmed_line[2] == ' ')
-		data->no = ft_strdup(trimmed_line + 3);
-	if (trimmed_line[0] == 'S' && trimmed_line[1] == 'O'
-		&& trimmed_line[2] == ' ')
-		data->so = ft_strdup(trimmed_line + 3);
-	if (trimmed_line[0] == 'E' && trimmed_line[1] == 'A'
-		&& trimmed_line[2] == ' ')
-		data->ea = ft_strdup(trimmed_line + 3);
-	if (trimmed_line[0] == 'W' && trimmed_line[1] == 'E'
-		&& trimmed_line[2] == ' ')
-		data->we = ft_strdup(trimmed_line + 3);
-	// if (trimmed_line[0] == 'C' && trimmed_line[1] == ' ')
-	// 	//parse_colors(data, trimmed_line + 2, data->c);
-	// if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
-	// 	//parse_colors(data, trimmed_line + 2, data->f);
-	else
-		data->maze[*i] = ft_strdup(line);
-
-	if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
-		&& line[0] != 'C' && line[0] != 'F')
-		(*i)++;
-	free(trimmed_line);
-}
-
-void	parse_file(char *av1, t_data *data)
-{
-	char	*line;
-	int		fd;
+	char	**splitted;
 	int		i;
-	bool	flag;
 
-	i = 0;
-	flag = false;
-	data->maze = malloc((data->rows_num + 1) * sizeof(char *));
-	if (!data->maze)
-		err("malloc fail!\n");
-	fd = open(av1, O_RDONLY);
-	if (fd < 0)
-		err("open fail!\n");
-	line = get_next_line(fd);
-	while (line != NULL)
-	{
-		data_entry(line, data, &i);
-		free(line);
-		line = get_next_line(fd);
-	}
-	data->maze[i] = NULL;
-	if (data->killflag == true)
+	splitted = ft_split(col, ',');
+	if (!splitted)
 		free_data(data, true);
-	close(fd);
+	i = 0;
+	while (splitted && splitted[i] != NULL)
+	{
+		color[i] = ft_atoi(splitted[i]);
+		if (color[i] < 0 || color[i] > 255)
+			break ;
+		i++;
+	}
+	if (i != 3)
+		data->killflag = true;
+	free_splitted(data, splitted, false);
 }
 
-int	ft_isspace(char c)
-{
-	if ((c >= 9 && c <= 13) || c == 32)
-		return (1);
-	return (0);
-}
+// int	check_texture(t_data *data, char *trimmed_line)
+// {
+// 	int	fd;
+
+// 	if (data->shootflag == true)
+// 		return (0);
+// 	fd = open(trimmed_line + 3, O_RDONLY);
+// 	if (fd < 0)
+// 		return (0);
+// 	return (data->textures_num++, 1);
+// }
+
+// int	check_number(t_data *data, char *trimmed_line)
+// {
+// 	int	i;
+// 	int	comma;
+// 	int	num;
+
+// 	if (data->shootflag == true)
+// 		return (0);
+// 	i = 0;
+// 	comma = 0;
+// 	num = 0;
+// 	trimmed_line++;
+// 	while (trimmed_line[i])
+// 	{
+// 		if (ft_isspace(trimmed_line[i]))
+// 			while (trimmed_line[i] && ft_isspace(trimmed_line[i]))
+// 				i++;
+// 		if (ft_isdigit(trimmed_line[i]))
+// 		{
+// 			num++;
+// 			while (trimmed_line[i] && ft_isdigit(trimmed_line[i]))
+// 				i++;
+// 		}
+// 		i++;
+// 	}
+// 	if (num != 3)
+// 		return (0);
+// 	return (data->colors_num++, 1);
+// }
+
+// void	process_textures_colors(t_data *data, char *trimmed_line)
+// {
+// 	if ((((trimmed_line[0] == 'N' && !check_texture(data, trimmed_line)) 
+// 	|| (trimmed_line[0] == 'S' && !check_texture(data, trimmed_line))
+// 	|| (trimmed_line[0] == 'E' && !check_texture(data, trimmed_line))
+// 	|| (trimmed_line[0] == 'W' && !check_texture(data, trimmed_line))
+// 	|| (trimmed_line[0] == 'C' && !check_number(data, trimmed_line))
+// 	|| (trimmed_line[0] == 'F' && !check_number(data, trimmed_line)))))
+// 	{
+// 		data->shootflag = true;
+// 	}
+// 	if (trimmed_line[0] == 'N' && trimmed_line[1] == 'O'
+// 		&& trimmed_line[2] == ' ')
+// 		data->no = ft_strdup(trimmed_line + 3);
+// 	if (trimmed_line[0] == 'S' && trimmed_line[1] == 'O'
+// 		&& trimmed_line[2] == ' ')
+// 			data->so = ft_strdup(trimmed_line + 3);
+// 	if (trimmed_line[0] == 'E' && trimmed_line[1] == 'A'
+// 		&& trimmed_line[2] == ' ')
+// 			data->ea = ft_strdup(trimmed_line + 3);
+// 	if (trimmed_line[0] == 'W' && trimmed_line[1] == 'E'
+// 		&& trimmed_line[2] == ' ')
+// 			data->we = ft_strdup(trimmed_line + 3);
+// 	if (trimmed_line[0] == 'C' && trimmed_line[1] == ' ')
+// 		parse_colors(data, trimmed_line + 2, data->c);
+// 	if (trimmed_line[0] == 'F' && trimmed_line[1] == ' ')
+// 		parse_colors(data, trimmed_line + 2, data->f);
+// 	if (trimmed_line[0] == 'N' || trimmed_line[0] == 'S'
+// 		|| trimmed_line[0] == 'W' || trimmed_line[0] == 'E'
+// 		|| trimmed_line[0] == 'C' || trimmed_line[0] == 'F')
+// 			data->shootflag = true;
+// }
+
+// void	data_entry(char *line, t_data *data, int *i)
+// {
+// 	char	**tmp;
+// 	char	*trimmed_line;
+
+// 	trimmed_line = ft_strtrim(line, " \t\v\f\r\n");
+// 	process_textures_colors(data, trimmed_line);
+// 	if (((trimmed_line[0] == 'N' && trimmed_line[1] == 'O'
+// 				&& trimmed_line[2] == ' ') || (trimmed_line[0] == 'S'
+// 				&& trimmed_line[1] == 'O' && trimmed_line[2] == ' ')
+// 			|| (trimmed_line[0] == 'E' && trimmed_line[1] == 'A'
+// 				&& trimmed_line[2] == ' ') || (trimmed_line[0] == 'W'
+// 				&& trimmed_line[1] == 'E' && trimmed_line[2] == ' ')))
+// 		data->killflag = false;
+// 	if (((trimmed_line[0] == 'C' && check_number(data, trimmed_line))
+// 			|| (trimmed_line[0] == 'F' && check_number(data, trimmed_line))))
+// 		data->killflag = false;
+// 	else
+// 	{
+// 		data->maze[*i] = ft_strdup(line);
+// 		data->shootflag = false;
+// 	}
+// 	if (line[0] != 'N' && line[0] != 'S' && line[0] != 'E' && line[0] != 'W'
+// 		&& line[0] != 'C' && line[0] != 'F')
+// 		(*i)++;	
+// 	free(trimmed_line);
+// }
+
+// void	parse_file(char *av1, t_data *data)
+// {
+// 	char	*line;
+// 	int		fd;
+// 	int		i;
+// 	bool	flag;
+
+// 	i = 0;
+// 	flag = false;
+// 	data->maze = malloc((data->rows_num + 1) * sizeof(char *));
+// 	if (!data->maze)
+// 		err("malloc fail!\n");
+// 	fd = open(av1, O_RDONLY);
+// 	if (fd < 0)
+// 		err("open fail!\n");
+// 	line = get_next_line(fd);
+// 	while (line != NULL)
+// 	{
+// 		data_entry(line, data, &i);
+// 		free(line);
+// 		line = get_next_line(fd);
+// 	}
+// 	data->maze[i] = NULL;
+// 	close(fd);
+// 	if (data->shootflag == true)
+// 		free_data(data, true);
+// }
 
 int	isplayer(char c)
 {
@@ -244,13 +333,164 @@ void	extention_check(t_data *data)
 	check_extention(data->we, ".png", true, data);
 }
 
+void	process_player(t_data *data, int i, int j)
+{
+	data->player->player_x = i;
+	data->player->player_y = j;
+	data->player->player_id = data->maze[i][j];
+}
+
+void	check_map_normed(t_data *data, int i, int j, int holder)
+{
+	if (i == 0 && (data->maze[i][j] != '1' && data->maze[i][j] != '\n'))
+		free_data(data, true);
+	if ((j == holder && data->maze[i][j] != '1')
+	|| ((j == ft_strlen(data->maze[i]) - 2)
+		&& data->maze[i][j] != '1'))
+		free_data(data, true);
+	if (ft_isalnum(data->maze[i][j]) && (data->maze[i][j] != '1' 
+		&& data->maze[i][j] != '0' && data->maze[i][j] != '\n'
+		&& data->maze[i][j] != ' '
+		&& data->maze[i][j] != 'N' && data->maze[i][j] != 'E'
+		&& data->maze[i][j] != 'W' && data->maze[i][j] != 'S'))
+		free_data(data, true);
+	if (i == data->map_ends && (data->maze[i][j] != '1'
+		&& !ft_isspace(data->maze[i][j])))
+		free_data(data, true);
+	if (playerpos(data->maze[i][j], "NSWE"))
+	{
+		data->playercount++;
+		process_player(data, i, j);
+	}
+	if (data->playercount > 1)
+		free_data(data, true);
+}
+
+void	check_map(t_data *data)
+{
+	int	i;
+	int	j;
+	int	holder;
+
+	i = data->map_begins;
+	j = 0;
+	while (i < data->map_ends + 1)
+	{
+		j = 0;
+		while (j < ft_strlen(data->maze[i]))
+		{
+			holder = 0;
+			if (j == 0 && !ft_isalnum(data->maze[i][j]))
+			{
+				while (data->maze[i][j] != '\0'
+					&& !ft_isalnum(data->maze[i][j]))
+					j++;
+				holder = j;
+			}
+			check_map_normed(data, i, j, holder);
+			if (i == data->map_ends && data->maze[i][j] != '1'
+				&& !ft_isspace(data->maze[i][j]))
+				free_data(data, true);
+			j++;
+		}
+		i++;
+	}
+}
+
+void	verify_map(t_data *data)
+{
+	int	i;
+	int	j;
+	int	holder;
+
+	i = 0;
+	j = 0;
+	while (i < data->map_begins - 1)
+	{
+		j = 0;
+		while (data->maze[i][j])
+		{
+			if (i < data->map_begins)
+			{
+				if (!ft_isspace(data->maze[i][j]))
+					free_data(data, true);
+			}
+			j++;
+		}
+		i++;
+	}
+	check_map(data);
+}
+
+
+void	get_map(t_data *data)
+{
+	int	i;
+	int j;
+
+	i = data->map_begins;
+	while (data->maze[i] != NULL)
+	{
+		j = 0;
+			while (j < ft_strlen(data->maze[i]))
+				j++;
+		i++;
+	}
+	while (--i >= data->map_begins)
+	{
+		j = 0;
+		while (j < ft_strlen(data->maze[i]))
+		{
+			if (j == 0 && data->maze[i][j] == '1')
+			{
+				break ;
+			}
+			j++;
+		}
+		if (j != ft_strlen(data->maze[i]))
+			break;
+	}
+	data->map_ends = i;
+	data->rows_num = data->map_ends - data->map_begins + 1;
+	verify_map(data);
+}
+
+void	check_order(t_data *data)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (data->maze[i] && data->killflag == true)
+	{
+		j = 0;
+		while (data->maze[i][j] != '\0')
+		{
+			if (!ft_isspace(data->maze[i][j]))
+			{
+				if (data->maze[i][j] == '1')
+				{
+					data->killflag = false;
+					break ;
+				}
+			}
+			j++;
+		}
+		i++;
+	}
+	data->map_begins = i;
+	data->killflag = true;
+	get_map(data);
+}	
+
 void	check_input(t_data *data)
 {
 	int	fd[4];
 	int	i;
 
 	i = 0;
-	if (!data->so || !data->no || !data->ea || !data->we || data->textures_num != 4 || data->colors_num != 2)
+	if (!data->so || !data->no || !data->ea || !data->we
+		|| data->textures_num != 4 || data->colors_num != 2)
 		free_data(data, true);
 	extention_check(data);
 	fd[0] = open(data->no, O_RDONLY);
@@ -268,6 +508,50 @@ void	check_input(t_data *data)
 	}
 	while (i >= 0)
 		close(fd[i--]);
+	check_order(data);
+}
+
+int	get_file_height(char *av1)
+{
+	char	*line;
+	int	fd;
+	int	i;
+
+	i = 0;
+	fd = open(av1, O_RDONLY);
+	if (!fd)
+		err("FD DZEB!\n");
+	line = get_next_line(fd);
+	while (line != NULL)
+	{
+		free(line);
+		line = get_next_line(fd);
+		i++;
+	}
+	return (i);
+}
+
+void	get_file_content(t_data *data, char *av1)
+{
+	char	*line;
+	int		fd;
+	int		len;
+	int		i;
+
+	len = get_file_height(av1);
+	fd = open(av1, O_RDONLY);
+	data->maze = malloc((len + 1) * sizeof(char *));
+	if (!fd)
+		err("FD DZEB!\n");
+	line = get_next_line(fd);
+	i = 0;
+	while (line != NULL)
+	{
+		data->maze[i] = ft_strdup(line);
+		free(line);
+		line = get_next_line(fd);
+	}
+	data->maze[i] = NULL;
 }
 
 int	main(int argc, char **argv)
@@ -280,10 +564,15 @@ int	main(int argc, char **argv)
 	if (argv[1])
 		check_extention(argv[1], ".cub", false, &data);
 	init_game_data(&data, &player, argv[1]);
-	parse_file(argv[1], &data);
+	get_file_content(&data, argv[1]);
+	// parse_file(argv[1], &data);
 	check_input(&data);
-	int	i = 0;
-	while (data.maze[i])
-		printf("%s", data.maze[i++]);
+	// int	i = 0;
+	// while (i < data.rows_num)
+	// {
+	// 	printf("%s", data.maze[data.map_begins]);
+	// 	data.map_begins++;
+	// 	i++;
+	// }
 	return (0);
 }
