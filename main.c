@@ -172,12 +172,7 @@ void	check_order(t_data *data)
 		j++;
 	}
 	data->map[j] = NULL;
-	// i = 0;
-	// while (data->map[i])
-	// {
-	//  	printf("%s", data->map[i]);
-	// 	i++;
-	// }
+	i = 0;
 	get_info(data);
 }
 
@@ -383,12 +378,6 @@ void	create_illusion(t_data *data)
 		illusion[i][j] = '\0';
 		i++;
 	}
-	// i = 0;
-	// while (illusion[i])
-	// {
-	// 	printf("%s\n", illusion[i]);
-	// 	i++;
-	// }
 	check_holes(data, illusion);
 }
 
@@ -411,7 +400,7 @@ void	map_check(t_data *data)
 				free_data(data, data->map, true);
 			if (i == 0 && !ft_isspace(data->map[i][j]) && data->map[i][j] != '1')
 				free_data(data, data->map, true);
-			if (data->map[i][j] == '\n' && data->map[i][j - 1] != '1')
+			if (data->map[i][j] == '\n' && data->map[i][j - 1] != '1' && !ft_isspace(data->map[i][j - 1]))
 				free_data(data, data->map, true);
 			if (i == data->rows_num - 1 && !ft_isspace(data->map[i][j])
 				&& data->map[i][j] != '1')
@@ -453,8 +442,6 @@ int	main(int argc, char **argv)
 	get_file_content(&data, argv[1]);
 	check_file_content(&data);
 	check_data_validity(&data);
-	int i = 0;
-	// while (data.map[i])
-	// 	printf("%s", data.map[i++]);
+	
 	return (0);
 }
