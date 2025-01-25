@@ -555,7 +555,6 @@ void	get_info(t_data *data)
 		i++;
 	}
 	data->info[i] = NULL;
-	free_data(data, data->maze, false);
 }
 
 void	check_order(t_data *data)
@@ -584,6 +583,7 @@ void	check_order(t_data *data)
 	{
 		data->map[j] = ft_strdup(data->maze[i]);
 		i++;
+		j++;
 	}
 	data->map[j] = NULL;
 	get_info(data);
@@ -606,6 +606,7 @@ void	check_file_content(t_data *data)
 			break ;
 		}
 		free(trimmed_line);
+		trimmed_line = NULL;
 		len--;
 	}
 	i = 0;
@@ -655,8 +656,15 @@ void	parse_colors(t_data *data, char *col, int *color)
 	while (splitted && splitted[i] != NULL)
 	{
 		color[i] = ft_atoi(splitted[i]);
+		if (color[i] <= 0 || color[i] >= 255)
+		{
+			data->killflag = true;
+			break ;
+		}
 		i++;
 	}
+	if (i != 3)
+		data->killflag = true;
 	free_splitted(data, splitted);
 }
 
@@ -694,15 +702,15 @@ void	info_check(t_data *data)
 			data->colors_num++;
 		if (data->info[i][0] == 'N' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
 			data->no = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
-		if (data->info[i][0] == 'S' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
+		else if (data->info[i][0] == 'S' && data->info[i][1] == 'O' && data->info[i][2] == ' ')
 			data->so = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
-		if (data->info[i][0] == 'W' && data->info[i][1] == 'E' && data->info[i][2] == ' ')
+		else if (data->info[i][0] == 'W' && data->info[i][1] == 'E' && data->info[i][2] == ' ')
 			data->we = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
-		if (data->info[i][0] == 'E' && data->info[i][1] == 'A' && data->info[i][2] == ' ')
+		else if (data->info[i][0] == 'E' && data->info[i][1] == 'A' && data->info[i][2] == ' ')
 			data->no = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
-		if (data->info[i][0] == 'C' && data->info[i][1] == ' ')
+		else if (data->info[i][0] == 'C' && data->info[i][1] == ' ')
 			parse_colors(data, data->info[i] + 2, data->c);
-		if (data->info[i][0] == 'F' && data->info[i][1] == ' ')
+		else if (data->info[i][0] == 'F' && data->info[i][1] == ' ')
 			parse_colors(data, data->info[i] + 2, data->f);
 		i++;
 	}
@@ -710,12 +718,39 @@ void	info_check(t_data *data)
 		data->killflag = true;
 }
 
+void	map_check(t_data *data)
+{
+	int	i;
+	int	j;
+	char	*trimmed_line;
+
+	i = 0;
+	while (data->map[i])
+	{
+		j = 0;
+		while (ft_isspace(data->map[i][j]) || data->map[i][j] == '\0')
+			j++;
+		if (data->map[i][j] != '1')
+			free_data(data, data->map, true);
+		while (data->map[i][j])
+		{
+			if (i == 0 && !ft_isspace(data->map[i][j]) && data->map[i][j] != '1')
+				free_data(data, data->map, true);
+			j++;
+		}
+		i++;
+	}
+}
+
 void	check_data_validity(t_data *data)
 {
+	int	i;
+
+	i = 0;
 	info_check(data);
 	if (data->killflag == true)
 		free_data(data, data->info, true);
-
+	map_check(data);
 }
 
 int	main(int argc, char **argv)
@@ -731,13 +766,10 @@ int	main(int argc, char **argv)
 	get_file_content(&data, argv[1]);
 	check_file_content(&data);
 	check_data_validity(&data);
+	int i = 0;
+	while (data.map[i])
+		printf("%s", data.map[i++]);
 	// parse_file(argv[1], &data);
-	//check_input(&data);
-	// int	i = 0;
-	// while (data.maze[i])
-	// {
-	// 	printf("%s", data.maze[i]);
-	// 	i++;
-	// }
+	// check_input(&data);
 	return (0);
 }
