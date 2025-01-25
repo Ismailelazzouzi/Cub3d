@@ -160,7 +160,7 @@ void	check_order(t_data *data)
 		}
 		i++;
 	}
-	data->map = malloc(data->rows_num * sizeof(char *));
+	data->map = malloc((data->rows_num + 1) * sizeof(char *));
 	if (!data->map)
 		free_data(data, data->maze, true);
 	i = data->map_begins;
@@ -172,6 +172,12 @@ void	check_order(t_data *data)
 		j++;
 	}
 	data->map[j] = NULL;
+	// i = 0;
+	// while (data->map[i])
+	// {
+	//  	printf("%s", data->map[i]);
+	// 	i++;
+	// }
 	get_info(data);
 }
 
@@ -315,23 +321,23 @@ int	playerpos(char c, char *set)
 	return (0);
 }
 
-void	check_holes(t_data *data)
+void	check_holes(t_data *data, char **illusion)
 {
 	int	i;
 	int	j;
 
 	i = 0;
-	while (data->map[i])
+	while (illusion[i])
 	{
 		j = 0;
-		while (data->map[i][j] && data->map[i][j] != '\n')
+		while (illusion[i][j])
 		{
-			if (data->map[i][j] == '0' || playerpos(data->map[i][j], "NESW"))
+			if (illusion[i][j] == '0' || playerpos(illusion[i][j], "NESW"))
 			{
-				if (data->map[i][j - 1] == ' ' || data->map[i][j + 1] == ' ' ||
-				data->map[i - 1][j] == ' ' || data->map[i + 1][j] == ' ')
-					free_data(data, data->map, true);
-				if (playerpos(data->map[i][j], "NSWE"))
+				if (illusion[i][j - 1] == ' ' || illusion[i][j + 1] == ' ' ||
+				illusion[i - 1][j] == ' ' || illusion[i + 1][j] == ' ')
+					free_data(data, illusion, true);
+				if (playerpos(illusion[i][j], "NSWE"))
 				{
 					data->player->player_x = i;
 					data->player->player_y = j;
@@ -342,6 +348,48 @@ void	check_holes(t_data *data)
 		}
 		i++;
 	}
+}
+
+void	create_illusion(t_data *data)
+{
+	int	i;
+	int	j;
+	char	**illusion;
+
+	illusion = malloc((data->rows_num + 1) * sizeof(char *));
+	if (!illusion)
+		err("malloc failed!\n");
+	i = 0;
+	while (i < data->rows_num)
+	{
+		illusion[i] = malloc(data->column_num + 1);
+		if (!illusion[i])
+			err("malloc failed!\n");
+		i++;
+	}
+	illusion[i] = NULL;
+	i = 0;
+	while (data->map[i])
+	{
+		j = 0;
+		while (j < data->column_num - 1)
+		{
+			if (!playerpos(data->map[i][j], "10NSEW") || j > ft_strlen(data->map[i]))
+				illusion[i][j] = ' ';
+			else
+				illusion[i][j] = data->map[i][j];
+			j++;
+		}
+		illusion[i][j] = '\0';
+		i++;
+	}
+	// i = 0;
+	// while (illusion[i])
+	// {
+	// 	printf("%s\n", illusion[i]);
+	// 	i++;
+	// }
+	check_holes(data, illusion);
 }
 
 void	map_check(t_data *data)
@@ -370,13 +418,15 @@ void	map_check(t_data *data)
 				free_data(data, data->map, true);
 			if (playerpos(data->map[i][j], "NESW"))
 				data->playercount++;
+			if (data->column_num < j)
+				data->column_num = j + 1;
 			j++;
 		}
 		i++;
 	}
 	if (data->playercount != 1)
 		free_data(data, data->map, true);
-	check_holes(data);
+	create_illusion(data);
 }
 
 void	check_data_validity(t_data *data)
@@ -404,7 +454,7 @@ int	main(int argc, char **argv)
 	check_file_content(&data);
 	check_data_validity(&data);
 	int i = 0;
-	while (data.map[i])
-		printf("%s", data.map[i++]);
+	// while (data.map[i])
+	// 	printf("%s", data.map[i++]);
 	return (0);
 }
