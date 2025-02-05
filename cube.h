@@ -28,21 +28,54 @@
 #define tile_size 32
 #define fov (60 * (M_PI / 180))
 #define s_w 2000
-#define s_h 4000
+#define s_h 600
 
+typedef	struct s_colors
+{
+	uint32_t black_color;
+	uint32_t white_color;
+	uint32_t gray_color;
+	uint32_t red_color;
+	uint32_t green_color;
+}	t_colors;
+
+typedef struct s_inforays
+{
+	double first_intersection_x;
+    double first_intersaction_y;
+    double xa;
+    double ya;
+    int found_horizontal_wall;
+    double horizontal_hit_x;
+    double horizontal_hit_y;
+
+    int found_vertical_wall;
+    double vertical_hit_x;
+    double vertical_hit_y;
+    double next_horizontal_x;
+    double next_horizontal_y;
+    int grid_x;
+    int grid_y;
+    char s;
+
+	double next_vertical_x;
+    double next_vertical_y;
+	double h_d;
+    double v_d;
+}	t_inforays;
 
 typedef struct s_ray
 {
+	struct s_inforays *inforays;
     double ray_angle;
     int is_facing_down;
     int is_fasing_up;
     int is_fasing_right;
     int is_fasing_left;
-
     double wall_hit_x;
     double wall_hit_y;
     double distance;
-     uint32_t color;
+    uint32_t color;
 }t_ray;
 
 typedef struct s_player
@@ -65,6 +98,7 @@ typedef struct s_player
 typedef struct s_data
 {
 	struct s_player	*player;
+	struct s_colors *colores;
 	char			**maze;
 	char			**map;
 	char			**info;

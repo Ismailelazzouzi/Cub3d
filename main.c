@@ -51,9 +51,10 @@ void	free_data(t_data *data, char **content ,bool flag)
 		err("INVALID INPUT! azabi\n");
 }
 
-void	init_game_data(t_data *data, t_player *player, char *av1)
+void	init_game_data(t_data *data, t_player *player, t_colors *colores, char *av1)
 {
 	data->player = player;
+	data->colores = colores;
 	data->no = NULL;
 	data->so = NULL;
 	data->ea = NULL;
@@ -70,6 +71,11 @@ void	init_game_data(t_data *data, t_player *player, char *av1)
 	data->playercount = 0;
 	data->killflag = false;
 	data->shootflag = false;
+	data->colores->black_color = get_rgba(0,0,0,255);
+	data->colores->white_color = get_rgba(255,250,255,255);
+	data->colores->gray_color = get_rgba(128,128,128,255);
+	data->colores->red_color = get_rgba(255,0,0,255);
+	data->colores->green_color = get_rgba(0,255,0,255);
 	ft_memset(&data->c, 0, sizeof(data->c));
 	ft_memset(&data->f, 0, sizeof(data->c));
 }
@@ -444,50 +450,129 @@ void	fill_map(t_data *data)
 	}
 }
 
+void	black_window(t_data *data)
+{
+	int	x;
+	int	y;
+
+	x = 0;
+	y = 0;
+	while (y < s_h)
+	{
+		x = 0;
+        while (x < s_w)
+		{
+            mlx_put_pixel(data->player->img, x, y, data->colores->black_color);
+			x++;
+        }
+		y++;
+    }
+}
+
+void	fill_window(t_data *data)
+{
+	int	i;
+	int	j;
+	int	tile_x;
+	int	tile_y;
+
+	i = 0;
+	black_window(data);
+	while (i < data->rows_num - 1)
+	{
+		j = 0;
+		while (j < ft_strlen(data->map[i]) - 1)
+		{
+			tile_x = j * tile_size;
+        	tile_y = i * tile_size;
+			if (data->map[i][j] == '0' || data->map[i][j] == 'E')
+            	put_squer(data->colores->white_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
+			else if(data->map[i][j] == '1')
+                put_squer(data->colores->gray_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
+			else if (data->map[i][j] != '0' && data->map[i][j] != '1')
+				put_squer(data->colores->red_color, data->player->img, tile_size - 1, tile_size - 1,tile_x,tile_y);
+			j++;
+		}
+		while (j < data->column_num)
+		{
+			tile_x = j * tile_size;
+        	tile_y = i * tile_size;
+			put_squer(data->colores->red_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
+			j++;
+		}
+		i++;
+	}
+}
+
+void	init_raycasting(t_data *data)
+{
+	int	n_r = 2000;
+	int	i = 0;
+	data->player->x = (double)data->player->player_x * tile_size + tile_size / 2;
+	data->player->y = (double)data->player->player_y * tile_size + tile_size / 2;
+	data->player->radius = 3;
+    data->player->rotation_angle = 0;
+    data->player->turn_direction = 0;
+    data->player->walk_direction = 0;
+    data->player->move_speed = 4;
+    data->player->retation_speed = 2 * (M_PI /180);
+	data->player->rays = malloc(n_r * sizeof(t_ray *));
+	while (i < n_r)
+   		data->player->rays[i++] = malloc(sizeof(t_ray));
+	data->mlx = mlx_init(s_w, s_h, "MLX42", true);
+    data->player->img = mlx_new_image(data->mlx, s_w, s_h);
+	fill_window(data);
+	draw_circle(data->mlx, data->player->img, data->player->x, data->player->y, data->player->radius, data->colores->green_color);
+    draw_line(data->mlx, data->player->img, data->player->x, data->player->y, (data->player->x + cos(data->player->rotation_angle) * 50),(data->player->y + sin(data->player->rotation_angle) * 50), data->colores->red_color);
+}
+
 int	main(int argc, char **argv)
 {
 	t_data		data;
 	t_player	player;
+	t_colors	colores;
 
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
 		check_extention(argv[1], ".cub", false, &data);
-	init_game_data(&data, &player, argv[1]);
+	init_game_data(&data, &player, &colores, argv[1]);
 	get_file_content(&data, argv[1]);
 	check_file_content(&data);
 	check_data_validity(&data);
+	init_raycasting(&data);
+	render_rays(player.rays, &data);
 	int mapwidth = data.column_num * tile_size;
 	int mapheight = data.rows_num * tile_size;
 
-	player.x = (double)player.player_x * tile_size + tile_size / 2;
-	player.y = (double)player.player_y * tile_size + tile_size / 2;
-	player.radius = 3;
-    player.rotation_angle = 0;
-    player.turn_direction = 0;
-    player.walk_direction = 0;
-    player.move_speed = 4;
-    player.retation_speed = 2 * (M_PI /180);
-	int n_r = 2000;
-	player.rays = malloc(n_r * sizeof(t_ray *)); // Array of pointers
-for (int i = 0; i < n_r; i++) {
-    player.rays[i] = malloc(sizeof(t_ray)); // Allocate each struct individually
-}
-	data.mlx = mlx_init(s_w, s_h, "MLX42", true);
+	// player.x = (double)player.player_x * tile_size + tile_size / 2;
+	// player.y = (double)player.player_y * tile_size + tile_size / 2;
+	// player.radius = 3;
+    // player.rotation_angle = 0;
+    // player.turn_direction = 0;
+    // player.walk_direction = 0;
+    // player.move_speed = 4;
+    // player.retation_speed = 2 * (M_PI /180);
+	// int n_r = 2000;
+	// player.rays = malloc(n_r * sizeof(t_ray *)); // Array of pointers
+	// for (int i = 0; i < n_r; i++) {
+   	// 	player.rays[i] = malloc(sizeof(t_ray)); // Allocate each struct individually
+	// }
+	// data.mlx = mlx_init(s_w, s_h, "MLX42", true);
  
-    player.img = mlx_new_image(data.mlx, s_w, s_h);
+    // player.img = mlx_new_image(data.mlx, s_w, s_h);
 
-	uint32_t black_color = get_rgba(0,0,0,255);
-    uint32_t white_color = get_rgba(255,250,255,255);
-    uint32_t gray_color = get_rgba(128,128,128,255);
-    uint32_t red_color = get_rgba(255,0,0,255);
-	uint32_t green_color = get_rgba(0,255,0,255);
+	// uint32_t black_color = get_rgba(0,0,0,255);
+    // uint32_t white_color = get_rgba(255,250,255,255);
+    // uint32_t gray_color = get_rgba(128,128,128,255);
+    // uint32_t red_color = get_rgba(255,0,0,255);
+	// uint32_t green_color = get_rgba(0,255,0,255);
 
-	    for (int y = 0; y < s_h; y++) {
-        for (int x = 0; x < s_w; x++) {
-            mlx_put_pixel(player.img, x, y, black_color);
-        }
-    }
+	//     for (int y = 0; y < s_h; y++) {
+    //     for (int x = 0; x < s_w; x++) {
+    //         mlx_put_pixel(player.img, x, y, data.colores->black_color);
+    //     }
+    // }
 
 	//  for (int i = 0; i < data.column_num; i++) {
     //     for (int j = 0; j < data.rows_num; j++) {
@@ -505,42 +590,47 @@ for (int i = 0; i < n_r; i++) {
 	int tile_x = 0, tile_y = 0;
 
 	//printf("%d\n", tile_size);
-	while (i < data.rows_num - 1)
-	{
-		j = 0;
-			//printf("%zu\n",ft_strlen(data.map[i]));
-		while (j < ft_strlen(data.map[i]) - 1)
-		{
-			tile_x = j * tile_size;
-        	tile_y = i * tile_size;
-			if (data.map[i][j] == '0' || data.map[i][j] == 'E')
-            	put_squer(white_color,player.img,tile_size-1, tile_size-1,tile_x,tile_y);
-			else if(data.map[i][j] == '1')
-                put_squer(gray_color,player.img,tile_size-1, tile_size-1,tile_x,tile_y);
-			else if (data.map[i][j] != '0' && data.map[i][j] != '1')
-			{
+	// while (i < data.rows_num - 1)
+	// {
+	// 	j = 0;
+	// 		//printf("%zu\n",ft_strlen(data.map[i]));
+	// 	while (j < ft_strlen(data.map[i]) - 1)
+	// 	{
+	// 		tile_x = j * tile_size;
+    //     	tile_y = i * tile_size;
+	// 		if (data.map[i][j] == '0' || data.map[i][j] == 'E')
+    //         	put_squer(data.colores->white_color, player.img,tile_size-1, tile_size-1,tile_x,tile_y);
+	// 		else if(data.map[i][j] == '1')
+    //             put_squer(data.colores->gray_color,player.img,tile_size-1, tile_size-1,tile_x,tile_y);
+	// 		else if (data.map[i][j] != '0' && data.map[i][j] != '1')
+	// 		{
 			
-					put_squer(red_color, player.img,tile_size-1, tile_size-1,tile_x,tile_y);
+	// 				put_squer(data.colores->red_color, player.img,tile_size-1, tile_size-1,tile_x,tile_y);
 				
-			}
+	// 		}
 	
 			
-			j++;
-		}
-		//printf("%d\n", j);
-		while(j < data.column_num)
-		{
-				tile_x = j * tile_size;
-        	tile_y = i * tile_size;
-			put_squer(red_color, player.img,tile_size-1, tile_size-1,tile_x,tile_y);
-			j++;
-		}
-		i++;
-	}
+	// 		j++;
+	// 	}
+	// 	//printf("%d\n", j);
+	// 	while(j < data.column_num)
+	// 	{
+	// 			tile_x = j * tile_size;
+    //     	tile_y = i * tile_size;
+	// 		put_squer(data.colores->red_color, player.img,tile_size-1, tile_size-1,tile_x,tile_y);
+	// 		j++;
+	// 	}
+	// 	i++;
+	// }
+	int	n_r = 2000;
 //	printf("player x : %d\n", player.player_x);
-	draw_circle(data.mlx, player.img, player.x, player.y, player.radius, green_color);
-    draw_line(data.mlx,player.img, player.x, player.y, (player.x + cos(player.rotation_angle) * 50),(player.y + sin(player.rotation_angle)*50), red_color);
-	render_rays(player.rays, &data);
+
+
+	// draw_circle(data.mlx, player.img, player.x, player.y, player.radius, data.colores->green_color);
+    // draw_line(data.mlx,player.img, player.x, player.y, (player.x + cos(player.rotation_angle) * 50),(player.y + sin(player.rotation_angle)*50), data.colores->red_color);
+
+
+	
 	mlx_image_to_window(data.mlx, player.img, 0, 0);
 	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
 	mlx_loop(data.mlx);
