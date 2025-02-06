@@ -27,7 +27,7 @@
 
 #define tile_size 32
 #define fov (60 * (M_PI / 180))
-#define s_w 2000
+#define s_w 500
 #define s_h 600
 
 typedef	struct s_colors
@@ -37,6 +37,8 @@ typedef	struct s_colors
 	uint32_t gray_color;
 	uint32_t red_color;
 	uint32_t green_color;
+	uint32_t floor_color;
+	uint32_t cieling_color;
 }	t_colors;
 
 typedef struct s_inforays
@@ -123,12 +125,32 @@ typedef struct s_data
 }	t_data;
 
 
-int get_rgba(int r, int g, int b, int a);
+void	init_game_data(t_data *data, t_player *player, t_colors *colores);
+void	get_file_content(t_data *data, char *av1);
+void	err(char *str);
+void	check_file_content(t_data *data);
+void	free_data(t_data *data, char **content ,bool flag);
+int		ft_isspace(char c);
+
+
+int	get_rgba(int r, int g, int b, int a);
 void put_squer(uint32_t color,mlx_image_t *img,int h, int w,int x, int y);
-void put_pixel(mlx_t *mlx, mlx_image_t *img, int x, int y, int color);
-void draw_circle(mlx_t *mlx, mlx_image_t *img, int cx, int cy, int radius, int color);
-void draw_line(mlx_t *mlx, mlx_image_t *img, int x1, int y1, int x2, int y2, int color);
+void put_pixel(mlx_image_t *img, int x, int y, int color);
+void draw_circle(mlx_image_t *img, int cx, int cy, int radius, int color);
+void draw_line(mlx_image_t *img, int x1, int y1, int x2, int y2, int color);
+void draw_rect(mlx_image_t *img, int x, int y, int width, int height, uint32_t color);
+void render_background(t_data *data);
 void render_rays(t_ray **rays,t_data *data);
 void update(struct mlx_key_data key_data, t_data *data);
+void	clear_image(mlx_image_t *img, uint32_t color);
+double	normalize(double angle);
+double	calculate_distance(double x1, double y1, double x2, double y2);
+void	init_ray_info(t_ray *ray);
+void	init_ray1(t_ray *ray, double angle);
+void	init_ray(t_ray *ray, double angle);
+void	cast_rays(t_ray **rays, t_data *data);
+void	render_rays(t_ray **rays, t_data *data);
+void	cast(t_data *data, t_ray *ray);
+void	init_raycasting(t_data *data);
 
 #endif
