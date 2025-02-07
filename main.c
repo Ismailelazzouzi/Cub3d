@@ -425,29 +425,6 @@ void	map_check(t_data *data)
 	create_illusion(data);
 }
 
-void cleanup_textures(t_data *data)
-{
-    mlx_delete_texture(data->textures->north);
-    mlx_delete_texture(data->textures->south);
-    mlx_delete_texture(data->textures->east);
-    mlx_delete_texture(data->textures->west);
-}
-
-void	init_textures(t_data *data)
-{
-	t_texture textures;
-
-	data->textures = &textures;
-	data->textures->north = mlx_load_png(data->no);
-	data->textures->south = mlx_load_png(data->so);
-	data->textures->east = mlx_load_png(data->ea);
-	data->textures->west = mlx_load_png(data->no);
-// 	data->textures->imgnorth = mlx_texture_to_image(data->mlx, data->textures->north);
-// 	data->textures->imgsouth = mlx_texture_to_image(data->mlx, data->textures->south);
-// 	data->textures->imgeast = mlx_texture_to_image(data->mlx, data->textures->east);
-// 	data->textures->imgwest = mlx_texture_to_image(data->mlx, data->textures->west);
-}
-
 void	check_data_validity(t_data *data)
 {
 	int	i;
@@ -463,28 +440,28 @@ void	check_data_validity(t_data *data)
 
 int	main(int argc, char **argv)
 {
-	t_data		data;
-	t_player	player;
-	t_colors	colores;
+	t_data		*data;
 	int			n_r;
 
+	data = NULL;
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
-		check_extention(argv[1], ".cub", false, &data);
-	init_game_data(&data, &player, &colores);
-	get_file_content(&data, argv[1]);
-	check_file_content(&data);
-	check_data_validity(&data);
-	init_raycasting(&data);
-	render_rays(player.rays, &data);
+		check_extention(argv[1], ".cub", false, data);
+	data = malloc(sizeof(t_data *));
+	init_game_data(data, data->player, data->colores);
+	get_file_content(data, argv[1]);
+	check_file_content(data);
+	check_data_validity(data);
+	init_raycasting(data);
+	render_rays(data->player->rays, data);
 	n_r = 500;
-	mlx_image_to_window(data.mlx, player.img, 0, 0);
-	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
-	mlx_loop(data.mlx);
+	mlx_image_to_window(data->mlx, data->player->img, 0, 0);
+	mlx_key_hook(data->mlx, (mlx_keyfunc)update, data);
+	mlx_loop(data->mlx);
 	        for (int i = 0; i < n_r; i++) {
-        free(player.rays[i]);
+        free(data->player->rays[i]);
     }
-	mlx_terminate(data.mlx);
+	mlx_terminate(data->mlx);
 	return (0);
 }

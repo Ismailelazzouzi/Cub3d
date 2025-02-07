@@ -53,6 +53,22 @@ void	fill_window(t_data *data)
 	}
 }
 
+void cleanup_textures(t_data *data)
+{
+    mlx_delete_texture(data->textures->north);
+    mlx_delete_texture(data->textures->south);
+    mlx_delete_texture(data->textures->east);
+    mlx_delete_texture(data->textures->west);
+}
+
+void	init_textures(t_data *data)
+{
+	data->textures->north = mlx_load_png(data->no);
+	data->textures->south = mlx_load_png(data->so);
+	data->textures->east = mlx_load_png(data->ea);
+	data->textures->west = mlx_load_png(data->no);
+}
+
 void	init_raycasting(t_data *data)
 {
 	int	n_r = 500;

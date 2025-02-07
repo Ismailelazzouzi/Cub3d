@@ -1,27 +1,42 @@
 #include "cube.h"
 
-// void render_background(t_data *data)
-// {
-// 	int	y;
-// 	int	x;
+void draw_textured_wall(t_data *data, t_ray *ray, int x, double draw_start, double draw_end)
+{
+	mlx_texture_t *texture;
 
-// 	data->colores->floor_color = get_rgba(data->f[0], data->f[1], data->f[2], 100);
-// 	data->colores->cieling_color = get_rgba(data->c[0], data->c[1], data->c[2], 100);
-// 	y = 0;
-//     while (y < s_h)
-// 	{
-// 		x = 0;
-//         while (x < s_w)
-// 		{
-//             if (y > s_h / 2)
-//                 mlx_put_pixel(data->player->img, x, y, data->colores->floor_color);
-//             else
-//                 mlx_put_pixel(data->player->img, x, y, data->colores->cieling_color);
-// 			x++;
-//         }
-// 		y++;
-//     }
-// }
+	if (ray->wall_direction == NORTH)
+    	texture = data->textures->north;
+	else if (ray->wall_direction == SOUTH)
+    	texture = data->textures->south;
+	else if (ray->wall_direction == EAST)
+    	texture = data->textures->east;
+	else
+    	texture = data->textures->west;
+	
+
+	int tex_x = (int)(ray->texture_x * texture->width);
+    if ((!ray->was_hit_vertical && ray->is_facing_down) || 
+        (ray->was_hit_vertical && ray->is_fasing_left))
+        tex_x = texture->width - tex_x - 1;
+    
+    // Calculate step size for texture coordinate
+    double step = (double)texture->height / (draw_end - draw_start);
+    double tex_pos = 0;
+    // Draw the vertical strip
+    for (int y = (int)draw_start; y < (int)draw_end; y++)
+    {
+        if (y >= 0 && y < s_h && x >= 0 && x < s_w)
+        {
+            int tex_y = (int)tex_pos & (texture->height - 1);
+            uint8_t *pixel = &texture->pixels[
+                (tex_y * texture->width + tex_x) * texture->bytes_per_pixel];
+            
+            uint32_t color = get_rgba(pixel[0], pixel[1], pixel[2], pixel[3]);
+            mlx_put_pixel(data->player->img, x, y, color);
+        }
+        tex_pos += step;
+    }
+}
 
 void	render_rays(t_ray **rays, t_data *data)
 {
@@ -45,7 +60,8 @@ void	render_rays(t_ray **rays, t_data *data)
     	double draw_end = draw_begin + line_height;  // Bottom of the wall slice
 
     	// Cast draw_begin and draw_end to integers (if required by your function)
-   	 	draw_rect(data->player->img, a * 1, (int)draw_begin, 1, (int)(draw_end - draw_begin), rays[a]->color);
+   	 	//draw_rect(data->player->img, a * 1, (int)draw_begin, 1, (int)(draw_end - draw_begin), rays[a]->color);
+		draw_textured_wall(data, rays[a], a, draw_begin, draw_end);
 		a++;
 	}
 }
