@@ -4,20 +4,27 @@ void draw_textured_wall(t_data *data, t_ray *ray, int x, double draw_start, doub
 {
 	mlx_texture_t *texture;
 
-	if (ray->wall_direction == NORTH)
-    	texture = data->textures->north;
-	else if (ray->wall_direction == SOUTH)
-    	texture = data->textures->south;
-	else if (ray->wall_direction == EAST)
-    	texture = data->textures->east;
-	else
-    	texture = data->textures->west;
+	texture = NULL;
+	if (ray->was_hit_vertical == 0)  // Horizontal hit
+	{
+    	if (ray->is_facing_down)
+        	texture = data->textures->south;
+   		else    // is_facing_up
+        	texture = data->textures->north;
+	}	
+	else    // Vertical hit
+	{
+    	if (ray->is_fasing_right)
+    	    texture = data->textures->east;
+    	else    // is_facing_left
+    	    texture = data->textures->west;
+	}
 	
-
+	
 	int tex_x = (int)(ray->texture_x * texture->width);
     if ((!ray->was_hit_vertical && ray->is_facing_down) || 
         (ray->was_hit_vertical && ray->is_fasing_left))
-        tex_x = texture->width - tex_x - 1;
+	tex_x = texture->width - tex_x - 1;
     
     // Calculate step size for texture coordinate
     double step = (double)texture->height / (draw_end - draw_start);
@@ -109,6 +116,7 @@ void	init_ray(t_ray *ray, double angle)
 	}
 	ray->wall_hit_x = 0;
 	ray->wall_hit_y = 0;
+	ray->texture_x = 0;
 }
 
 void	init_ray1(t_ray *ray, double angle)

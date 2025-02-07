@@ -440,28 +440,28 @@ void	check_data_validity(t_data *data)
 
 int	main(int argc, char **argv)
 {
-	t_data		*data;
+	t_data		data;
+	t_player	player;
+	t_colors	colores;
 	int			n_r;
 
-	data = NULL;
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
-		check_extention(argv[1], ".cub", false, data);
-	data = malloc(sizeof(t_data *));
-	init_game_data(data, data->player, data->colores);
-	get_file_content(data, argv[1]);
-	check_file_content(data);
-	check_data_validity(data);
-	init_raycasting(data);
-	render_rays(data->player->rays, data);
+		check_extention(argv[1], ".cub", false, &data);
+	init_game_data(&data, &player, &colores);
+	get_file_content(&data, argv[1]);
+	check_file_content(&data);
+	check_data_validity(&data);
+	init_raycasting(&data);
+	render_rays(player.rays, &data);
 	n_r = 500;
-	mlx_image_to_window(data->mlx, data->player->img, 0, 0);
-	mlx_key_hook(data->mlx, (mlx_keyfunc)update, data);
-	mlx_loop(data->mlx);
+	mlx_image_to_window(data.mlx, player.img, 0, 0);
+	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
+	mlx_loop(data.mlx);
 	        for (int i = 0; i < n_r; i++) {
-        free(data->player->rays[i]);
+        free(player.rays[i]);
     }
-	mlx_terminate(data->mlx);
+	mlx_terminate(data.mlx);
 	return (0);
 }

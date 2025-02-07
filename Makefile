@@ -22,11 +22,11 @@ NAME = cub3d
 
 # Rule to create the executable
 $(NAME): $(OBJS) $(LIBFT) $(MLX)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX) $(GLFW_LIB) $(FRAMEWORKS) -o $(NAME)
+	$(CC) $(OBJS) $(LIBFT) $(MLX) $(GLFW_LIB) $(FRAMEWORKS) -o $(NAME)
 
 # Rule to create object files from .c files
 %.o: %.c cube.h
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	$(CC) -I$(INCLUDE_DIR) -c $< -o $@
 
 # Rule to clean object files
 clean:
