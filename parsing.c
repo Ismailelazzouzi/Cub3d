@@ -24,6 +24,7 @@ int	get_file_height(char *av1)
 		line = get_next_line(fd);
 		i++;
 	}
+	close(fd);
 	return (i);
 }
 
@@ -79,5 +80,6 @@ void	get_file_content(t_data *data, char *av1)
 		i++;
 	}
 	data->maze[i] = NULL;
+	close(fd);
 }
 

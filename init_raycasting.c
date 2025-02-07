@@ -70,6 +70,7 @@ void	init_raycasting(t_data *data)
    		data->player->rays[i++] = malloc(sizeof(t_ray));
 	data->mlx = mlx_init(s_w, s_h, "MLX42", true);
     data->player->img = mlx_new_image(data->mlx, s_w, s_h);
+	init_textures(data);
 	//black_window(data);
 	//fill_window(data);
 	// draw_circle(data->player->img, data->player->x, data->player->y, data->player->radius, data->colores->green_color);

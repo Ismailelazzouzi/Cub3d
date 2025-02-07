@@ -11,7 +11,7 @@ MLX_DIR = MLX42/build
 LIBFT = $(LIBFT_DIR)/libft.a
 MLX = $(MLX_DIR)/libmlx42.a
 GLFW_LIB = -L"/Users/isel-azz/.brew/opt/glfw/lib" -lglfw
-FRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit
+FRAMEWORKS = -fsanitize=address -g -framework Cocoa -framework OpenGL -framework IOKit
 
 # Source files and object files
 SRCS = main.c parsing.c parsing_1.c init_raycasting.c cast.c casting.c casting_1.c casting_2.c update.c get_next_line.c get_next_line_utils.c

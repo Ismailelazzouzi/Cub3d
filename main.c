@@ -299,7 +299,7 @@ void	info_check(t_data *data)
 		else if (data->info[i][0] == 'W' && data->info[i][1] == 'E' && data->info[i][2] == ' ')
 			data->we = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
 		else if (data->info[i][0] == 'E' && data->info[i][1] == 'A' && data->info[i][2] == ' ')
-			data->no = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
+			data->ea = ft_strtrim(data->info[i] + 3, " \t\v\f\r\n");
 		else if (data->info[i][0] == 'C' && data->info[i][1] == ' ')
 			parse_colors(data, data->info[i] + 2, data->c);
 		else if (data->info[i][0] == 'F' && data->info[i][1] == ' ')
@@ -425,12 +425,36 @@ void	map_check(t_data *data)
 	create_illusion(data);
 }
 
+void cleanup_textures(t_data *data)
+{
+    mlx_delete_texture(data->textures->north);
+    mlx_delete_texture(data->textures->south);
+    mlx_delete_texture(data->textures->east);
+    mlx_delete_texture(data->textures->west);
+}
+
+void	init_textures(t_data *data)
+{
+	t_texture textures;
+
+	data->textures = &textures;
+	data->textures->north = mlx_load_png(data->no);
+	data->textures->south = mlx_load_png(data->so);
+	data->textures->east = mlx_load_png(data->ea);
+	data->textures->west = mlx_load_png(data->no);
+// 	data->textures->imgnorth = mlx_texture_to_image(data->mlx, data->textures->north);
+// 	data->textures->imgsouth = mlx_texture_to_image(data->mlx, data->textures->south);
+// 	data->textures->imgeast = mlx_texture_to_image(data->mlx, data->textures->east);
+// 	data->textures->imgwest = mlx_texture_to_image(data->mlx, data->textures->west);
+}
+
 void	check_data_validity(t_data *data)
 {
 	int	i;
 
 	i = 0;
 	info_check(data);
+	printf("%s\n%s\n%s\n%s\n", data->no, data->so, data->ea, data->we);
 	if (data->killflag == true)
 		free_data(data, data->info, true);
 	map_check(data);

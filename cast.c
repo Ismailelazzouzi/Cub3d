@@ -72,6 +72,11 @@ void	cast_both(t_data *data, t_ray *ray)
 		ray->wall_hit_y = ray->inforays->horizontal_hit_y;
 		ray->distance = ray->inforays->h_d;
 		ray->color = get_rgba(128,160,128,255);
+		ray->texture_x = fmod(ray->wall_hit_x, tile_size) / tile_size;
+        if (ray->is_facing_down)
+    		ray->wall_direction = SOUTH;
+		else
+    		ray->wall_direction = NORTH;
 	}
 	else
 	{
@@ -79,6 +84,11 @@ void	cast_both(t_data *data, t_ray *ray)
 		ray->wall_hit_y = ray->inforays->vertical_hit_y;
 		ray->distance = ray->inforays->v_d;
 		ray->color = get_rgba(255,0,0,255);
+		ray->texture_x = fmod(ray->wall_hit_y, tile_size) / tile_size;
+		if (ray->is_fasing_right)
+		    ray->wall_direction = EAST;
+		else
+    		ray->wall_direction = WEST;
 	}
 	ray->distance *= cos(ray->ray_angle - data->player->rotation_angle); 
 }

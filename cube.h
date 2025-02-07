@@ -13,6 +13,8 @@
 #ifndef CUBE_H
 # define CUBE_H
 
+
+
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -29,6 +31,10 @@
 #define fov (60 * (M_PI / 180))
 #define s_w 500
 #define s_h 600
+#define NORTH 0
+#define SOUTH 1
+#define EAST  2
+#define WEST  3
 
 typedef	struct s_colors
 {
@@ -66,6 +72,18 @@ typedef struct s_inforays
     double v_d;
 }	t_inforays;
 
+typedef struct s_texture
+{
+    mlx_texture_t *north;
+    mlx_texture_t *south;
+    mlx_texture_t *east;
+    mlx_texture_t *west;
+	mlx_image_t	*imgnorth;
+	mlx_image_t *imgsouth;
+    mlx_image_t *imgeast;
+    mlx_image_t *imgwest;
+} t_texture;
+
 typedef struct s_ray
 {
 	struct s_inforays *inforays;
@@ -74,11 +92,14 @@ typedef struct s_ray
     int is_fasing_up;
     int is_fasing_right;
     int is_fasing_left;
+	int	was_hit_vertical;
+	int	wall_direction;
+	double	texture_x;
     double wall_hit_x;
     double wall_hit_y;
     double distance;
     uint32_t color;
-}t_ray;
+} t_ray;
 
 typedef struct s_player
 {
@@ -101,6 +122,7 @@ typedef struct s_data
 {
 	struct s_player	*player;
 	struct s_colors *colores;
+	struct s_texture *textures;
 	char			**maze;
 	char			**map;
 	char			**info;
@@ -152,5 +174,5 @@ void	cast_rays(t_ray **rays, t_data *data);
 void	render_rays(t_ray **rays, t_data *data);
 void	cast(t_data *data, t_ray *ray);
 void	init_raycasting(t_data *data);
-
+void	init_textures(t_data *data);
 #endif

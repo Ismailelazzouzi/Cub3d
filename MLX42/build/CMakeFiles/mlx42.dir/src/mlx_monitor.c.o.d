@@ -1,7 +1,7 @@
 CMakeFiles/mlx42.dir/src/mlx_monitor.c.o: \
-  /Users/isel-azz/Desktop/so_long/MLX42/src/mlx_monitor.c \
-  /Users/isel-azz/Desktop/so_long/MLX42/include/MLX42/MLX42_Int.h \
-  /Users/isel-azz/Desktop/so_long/MLX42/include/MLX42/MLX42.h \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/src/mlx_monitor.c \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/include/MLX42/MLX42_Int.h \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/include/MLX42/MLX42.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stddef.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/__stddef_max_align_t.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdint.h \
@@ -32,7 +32,7 @@ CMakeFiles/mlx42.dir/src/mlx_monitor.c.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_intmax_t.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uintmax_t.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdbool.h \
-  /Users/isel-azz/Desktop/so_long/MLX42/include/lodepng/lodepng.h \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/include/lodepng/lodepng.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/string.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/Availability.h \
@@ -44,8 +44,8 @@ CMakeFiles/mlx42.dir/src/mlx_monitor.c.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_strings.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_common.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_string.h \
-  /Users/isel-azz/Desktop/so_long/MLX42/include/glad/glad.h \
-  /Users/isel-azz/Desktop/so_long/MLX42/include/KHR/khrplatform.h \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/include/glad/glad.h \
+  /Users/isel-azz/Desktop/Cub3d/MLX42/include/KHR/khrplatform.h \
   /Users/isel-azz/.brew/include/GLFW/glfw3.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdlib.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/wait.h \

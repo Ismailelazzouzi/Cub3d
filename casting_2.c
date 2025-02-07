@@ -1,27 +1,27 @@
 #include "cube.h"
 
-void render_background(t_data *data)
-{
-	int	y;
-	int	x;
+// void render_background(t_data *data)
+// {
+// 	int	y;
+// 	int	x;
 
-	data->colores->floor_color = get_rgba(data->f[0], data->f[1], data->f[2], 100);
-	data->colores->cieling_color = get_rgba(data->c[0], data->c[1], data->c[2], 100);
-	y = 0;
-    while (y < s_h)
-	{
-		x = 0;
-        while (x < s_w)
-		{
-            if (y < s_h / 2)
-                mlx_put_pixel(data->player->img, x, y, data->colores->floor_color);
-            else
-                mlx_put_pixel(data->player->img, x, y, data->colores->cieling_color);
-			x++;
-        }
-		y++;
-    }
-}
+// 	data->colores->floor_color = get_rgba(data->f[0], data->f[1], data->f[2], 100);
+// 	data->colores->cieling_color = get_rgba(data->c[0], data->c[1], data->c[2], 100);
+// 	y = 0;
+//     while (y < s_h)
+// 	{
+// 		x = 0;
+//         while (x < s_w)
+// 		{
+//             if (y > s_h / 2)
+//                 mlx_put_pixel(data->player->img, x, y, data->colores->floor_color);
+//             else
+//                 mlx_put_pixel(data->player->img, x, y, data->colores->cieling_color);
+// 			x++;
+//         }
+// 		y++;
+//     }
+// }
 
 void	render_rays(t_ray **rays, t_data *data)
 {
