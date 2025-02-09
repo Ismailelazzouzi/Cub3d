@@ -153,7 +153,7 @@ void	err(char *str);
 void	check_file_content(t_data *data);
 void	free_data(t_data *data, char **content ,bool flag);
 int		ft_isspace(char c);
-
+void cleanup_textures(t_data *data);
 
 int	get_rgba(int r, int g, int b, int a);
 void put_squer(uint32_t color,mlx_image_t *img,int h, int w,int x, int y);

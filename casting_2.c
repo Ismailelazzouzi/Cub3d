@@ -3,6 +3,7 @@
 void draw_textured_wall(t_data *data, t_ray *ray, int x, double draw_start, double draw_end)
 {
 	mlx_texture_t *texture;
+	int	tex_x;
 
 	texture = NULL;
 	if (ray->was_hit_vertical == 0)  // Horizontal hit
@@ -19,9 +20,16 @@ void draw_textured_wall(t_data *data, t_ray *ray, int x, double draw_start, doub
     	else    // is_facing_left
     	    texture = data->textures->west;
 	}
-	
-	
-	int tex_x = (int)(ray->texture_x * texture->width);
+	// printf("[%d]\n", texture->width);
+	if (ray->was_hit_vertical)
+		tex_x = (int)((ray->wall_hit_y / tile_size) * texture->width)
+			% texture->width;
+	else
+		tex_x = (int)((ray->wall_hit_x / tile_size) * texture->width)
+			% texture->width;
+	if (tex_x < 0)
+		tex_x += texture->width;
+
     if ((!ray->was_hit_vertical && ray->is_facing_down) || 
         (ray->was_hit_vertical && ray->is_fasing_left))
 	tex_x = texture->width - tex_x - 1;
@@ -53,13 +61,14 @@ void	render_rays(t_ray **rays, t_data *data)
 	a = 0;
 	n_r = 500;
 	render_background(data);
-	cast_rays(rays, data);
 	// while (a < n_r)
 	// {
 	// 	draw_line(data->player->img, data->player->x, data->player->y,
 	// 		rays[a]->wall_hit_x, rays[a]->wall_hit_y, data->colores->red_color);
 	// 	a++;
 	// }
+	cast_rays(rays, data);
+	init_textures(data);
 	while (a < n_r)
 	{
 		double line_height = (32 / rays[a]->distance) * ((s_w/ 2.0) / tan(fov / 2));  // Calculate wall slice height
@@ -71,6 +80,7 @@ void	render_rays(t_ray **rays, t_data *data)
 		draw_textured_wall(data, rays[a], a, draw_begin, draw_end);
 		a++;
 	}
+	cleanup_textures(data);
 }
 
 void	cast_rays(t_ray **rays, t_data *data)

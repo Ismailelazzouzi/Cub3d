@@ -59,14 +59,35 @@ void cleanup_textures(t_data *data)
     mlx_delete_texture(data->textures->south);
     mlx_delete_texture(data->textures->east);
     mlx_delete_texture(data->textures->west);
+	free(data->textures);
 }
 
 void	init_textures(t_data *data)
 {
+	data->textures = malloc(sizeof(t_texture));
+	if (!data->textures)
+		err("zebi\n");
+	data->textures->north = NULL;
+	data->textures->south = NULL;
+	data->textures->west = NULL;
+	data->textures->east = NULL;
+
 	data->textures->north = mlx_load_png(data->no);
-	data->textures->south = mlx_load_png(data->so);
+	if (!data->textures->north)
+		err("zebi\n");
 	data->textures->east = mlx_load_png(data->ea);
-	data->textures->west = mlx_load_png(data->no);
+	if (!data->textures->east)
+		err("zebi\n");
+	data->textures->west = mlx_load_png(data->we);
+	if (!data->textures->west)
+		err("zebi\n");
+	data->textures->south = mlx_load_png(data->so);
+	if (!data->textures->south)
+		err("zebi\n");
+	printf("[%d]\n", data->textures->north->width);
+	printf("[%d]\n", data->textures->south->width);
+	printf("[%d]\n", data->textures->east->width);
+	printf("[%d]\n", data->textures->west->width);
 }
 
 void	init_raycasting(t_data *data)
