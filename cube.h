@@ -87,6 +87,7 @@ typedef struct s_texture
 typedef struct s_ray
 {
 	struct s_inforays *inforays;
+	mlx_texture_t	*texture;
     double ray_angle;
     int is_facing_down;
     int is_fasing_up;
@@ -94,6 +95,8 @@ typedef struct s_ray
     int is_fasing_left;
 	int	was_hit_vertical;
 	int	wall_direction;
+	int	tex_x;
+	int	tex_y;
 	double	texture_x;
     double wall_hit_x;
     double wall_hit_y;
@@ -123,6 +126,7 @@ typedef struct s_data
 	struct s_player	*player;
 	struct s_colors *colores;
 	struct s_texture *textures;
+	struct s_ray	*ray;
 	char			**maze;
 	char			**map;
 	char			**info;
@@ -175,4 +179,5 @@ void	render_rays(t_ray **rays, t_data *data);
 void	cast(t_data *data, t_ray *ray);
 void	init_raycasting(t_data *data);
 void	init_textures(t_data *data);
+
 #endif

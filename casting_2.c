@@ -1,55 +1,57 @@
 #include "cube.h"
 
-void draw_textured_wall(t_data *data, t_ray *ray, int x, double draw_start, double draw_end)
+mlx_texture_t	*innit_draw(t_data *data, t_ray *ray)
 {
-	mlx_texture_t *texture;
-	int	tex_x;
-
-	texture = NULL;
-	if (ray->was_hit_vertical == 0)  // Horizontal hit
-	{
-    	if (ray->is_facing_down)
-        	texture = data->textures->south;
-   		else    // is_facing_up
-        	texture = data->textures->north;
-	}	
-	else    // Vertical hit
-	{
-    	if (ray->is_fasing_right)
-    	    texture = data->textures->east;
-    	else    // is_facing_left
-    	    texture = data->textures->west;
-	}
-	// printf("[%d]\n", texture->width);
-	if (ray->was_hit_vertical)
-		tex_x = (int)((ray->wall_hit_y / tile_size) * texture->width)
-			% texture->width;
+	ray->texture = NULL;
+	if (ray->was_hit_vertical == 0)
+	    if (ray->is_facing_down)
+	        ray->texture = data->textures->west;
+	    else
+	        ray->texture = data->textures->east;
 	else
-		tex_x = (int)((ray->wall_hit_x / tile_size) * texture->width)
-			% texture->width;
-	if (tex_x < 0)
-		tex_x += texture->width;
+	    if (ray->is_fasing_right)
+	        ray->texture = data->textures->north;
+	    else
+	        ray->texture = data->textures->south;
+	if (ray->was_hit_vertical)
+		ray->tex_x = (int)((ray->wall_hit_y / tile_size) * ray->texture->width)
+			% ray->texture->width;
+	else
+		ray->tex_x = (int)((ray->wall_hit_x / tile_size) * ray->texture->width)
+			% ray->texture->width;
+	if (ray->tex_x < 0)
+		ray->tex_x += ray->texture->width;
 
     if ((!ray->was_hit_vertical && ray->is_facing_down) || 
         (ray->was_hit_vertical && ray->is_fasing_left))
-	tex_x = texture->width - tex_x - 1;
-    
-    // Calculate step size for texture coordinate
-    double step = (double)texture->height / (draw_end - draw_start);
+	ray->tex_x = (int)ray->texture->width - ray->tex_x - 1;
+	return (ray->texture);
+}
+
+void draw_textured_wall(t_data *data, int x, double draw_start, double draw_end)
+{
+	int	y;
+    double step;
     double tex_pos = 0;
-    // Draw the vertical strip
-    for (int y = (int)draw_start; y < (int)draw_end; y++)
+	uint32_t color;
+	uint8_t *pixel;
+
+	data->ray->texture = innit_draw(data, data->ray);
+	step = (double)data->ray->texture->height / (draw_end - draw_start);
+	y = (int)draw_start;
+    while (y < (int)draw_end)
     {
         if (y >= 0 && y < s_h && x >= 0 && x < s_w)
         {
-            int tex_y = (int)tex_pos & (texture->height - 1);
-            uint8_t *pixel = &texture->pixels[
-                (tex_y * texture->width + tex_x) * texture->bytes_per_pixel];
+            data->ray->tex_y = (int)tex_pos & (data->ray->texture->height - 1);
+            pixel = &data->ray->texture->pixels[
+                (data->ray->tex_y * data->ray->texture->width + data->ray->tex_x) * data->ray->texture->bytes_per_pixel];
             
-            uint32_t color = get_rgba(pixel[0], pixel[1], pixel[2], pixel[3]);
+            color = get_rgba(pixel[0], pixel[1], pixel[2], pixel[3]);
             mlx_put_pixel(data->player->img, x, y, color);
         }
         tex_pos += step;
+		y++;
     }
 }
 
@@ -57,27 +59,22 @@ void	render_rays(t_ray **rays, t_data *data)
 {
 	int	n_r;
 	int	a;
+	double line_height;
+    double draw_begin;
+    double draw_end;
 
 	a = 0;
 	n_r = 500;
 	render_background(data);
-	// while (a < n_r)
-	// {
-	// 	draw_line(data->player->img, data->player->x, data->player->y,
-	// 		rays[a]->wall_hit_x, rays[a]->wall_hit_y, data->colores->red_color);
-	// 	a++;
-	// }
 	cast_rays(rays, data);
 	init_textures(data);
 	while (a < n_r)
 	{
-		double line_height = (32 / rays[a]->distance) * ((s_w/ 2.0) / tan(fov / 2));  // Calculate wall slice height
-    	double draw_begin = (s_h / 2) - (line_height / 2);  // Top of the wall slice
-    	double draw_end = draw_begin + line_height;  // Bottom of the wall slice
-
-    	// Cast draw_begin and draw_end to integers (if required by your function)
-   	 	//draw_rect(data->player->img, a * 1, (int)draw_begin, 1, (int)(draw_end - draw_begin), rays[a]->color);
-		draw_textured_wall(data, rays[a], a, draw_begin, draw_end);
+		line_height = (32 / rays[a]->distance) * ((s_w/ 2.0) / tan(fov / 2));
+		draw_begin = (s_h / 2) - (line_height / 2);
+		draw_end = draw_begin + line_height;
+		data->ray = rays[a];
+		draw_textured_wall(data, a, draw_begin, draw_end);
 		a++;
 	}
 	cleanup_textures(data);

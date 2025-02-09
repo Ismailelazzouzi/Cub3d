@@ -431,7 +431,6 @@ void	check_data_validity(t_data *data)
 
 	i = 0;
 	info_check(data);
-	printf("%s\n%s\n%s\n%s\n", data->no, data->so, data->ea, data->we);
 	if (data->killflag == true)
 		free_data(data, data->info, true);
 	map_check(data);
