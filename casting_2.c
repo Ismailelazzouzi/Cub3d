@@ -65,7 +65,6 @@ void	render_rays(t_ray **rays, t_data *data)
 	a = 0;
 	render_background(data);
 	cast_rays(rays, data);
-	init_textures(data);
 	// while (a < s_w)
 	// {
 	// 	draw_line(data->player->img, data->player->x, data->player->y,
@@ -81,7 +80,6 @@ void	render_rays(t_ray **rays, t_data *data)
 		draw_textured_wall(data, a, draw_begin, draw_end);
 		a++;
 	}
-	cleanup_textures(data);
 }
 
 void	cast_rays(t_ray **rays, t_data *data)

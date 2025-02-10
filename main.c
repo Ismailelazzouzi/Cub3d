@@ -348,6 +348,7 @@ void	check_holes(t_data *data, char **illusion)
 		}
 		i++;
 	}
+	free_arr(illusion);
 }
 
 void	create_illusion(t_data *data)
@@ -449,6 +450,11 @@ void    free_textures(t_data *data)
         free(data->textures->south);
 }
 
+void	leakcheck()
+{
+	system("leaks cub3d");
+}
+
 int	main(int argc, char **argv)
 {
 	t_data		data;
@@ -457,6 +463,7 @@ int	main(int argc, char **argv)
     int i;
 
     i = 0;
+	atexit(leakcheck);
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
@@ -470,6 +477,19 @@ int	main(int argc, char **argv)
 	mlx_image_to_window(data.mlx, player.img, 0, 0);
 	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
 	mlx_loop(data.mlx);
+	cleanup_textures(&data);
+	free_data(&data, data.map, false);
+	free_arr(data.maze);
+	free_arr(data.info);
+	while(i < s_w)
+	{
+		if(data.player->rays[i])
+			free(data.player->rays[i]);
+		i++;
+	}
+	if(data.player->rays)
+		free(data.player->rays);
+	mlx_delete_image(data.mlx, data.player->img);
 	mlx_terminate(data.mlx);
 	return (0);
 }

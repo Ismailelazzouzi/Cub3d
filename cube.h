@@ -158,6 +158,7 @@ void	err(char *str);
 void	check_file_content(t_data *data);
 void	free_data(t_data *data, char **content ,bool flag);
 int		ft_isspace(char c);
+void	free_arr(char **arr);
 void cleanup_textures(t_data *data);
 
 int	get_rgba(int r, int g, int b, int a);

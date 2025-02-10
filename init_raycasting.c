@@ -72,7 +72,6 @@ void	init_textures(t_data *data)
 	data->textures->south = NULL;
 	data->textures->west = NULL;
 	data->textures->east = NULL;
-
 	data->textures->north = mlx_load_png(data->no);
 	if (!data->textures->north)
 		err("zebi\n");

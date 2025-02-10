@@ -44,6 +44,27 @@ void	update_1(t_data *data)
 	}
 }
 
+void	free_and_exit(t_data *data)
+{
+	// cleanup_textures(data);
+	// free_arr(data->map);
+	// free_arr(data->maze);
+	// free_arr(data->info);
+	// int i = 0;
+	// while(i < s_w)
+	// {
+	// 	if(data->player->rays[i])
+	// 		free(data->player->rays[i]);
+	// 	i++;
+	// }
+	// if(data->player->rays)
+	// 	free(data->player->rays);
+	// mlx_delete_image(data->mlx, data->player->img);
+	// mlx_terminate(data->mlx);
+	//(void)data;
+	exit(0);
+}
+
 void	update(struct mlx_key_data key_data, t_data *data)
 {
 	double	move_step;
@@ -59,14 +80,16 @@ void	update(struct mlx_key_data key_data, t_data *data)
 		data->player->turn_direction = 2;
 	if (key_data.key == MLX_KEY_LEFT)
 		data->player->turn_direction = -2;
-	if(key_data.key == MLX_KEY_D )
+	if (key_data.key == MLX_KEY_D )
         data->player->l_r= 1;
-    if(key_data.key == MLX_KEY_A )
+    if (key_data.key == MLX_KEY_A )
         data->player->l_r= -1;
 	if (key_data.key == MLX_KEY_W)
 		data->player->walk_direction = 2;
 	if (key_data.key == MLX_KEY_S)
 		data->player->walk_direction = -2;
+	if (key_data.key == MLX_KEY_ESCAPE)
+		free_and_exit(data);
 	
 	clear_image(data->player->img, get_rgba(0, 0, 0, 255));
 	update_1(data);
@@ -78,11 +101,11 @@ void	update(struct mlx_key_data key_data, t_data *data)
 	// data->player->x += cos(data->player->rotation_angle) * move_step;
 	// data->player->y += sin(data->player->rotation_angle) * move_step;
 	if(data->player->walk_direction != 0 || data->player->turn_direction)
-        {
-			move_step = data->player->walk_direction * data->player->move_speed;
-            x1 = data->player->x + cos(data->player->rotation_angle) * move_step;
-            y1 = data->player->y + sin(data->player->rotation_angle) * move_step;
-        }
+    {
+		move_step = data->player->walk_direction * data->player->move_speed;
+        x1 = data->player->x + cos(data->player->rotation_angle) * move_step;
+        y1 = data->player->y + sin(data->player->rotation_angle) * move_step;
+    }
 	else if(data->player->l_r !=0 || data->player->turn_direction)
     {
         if(data->player->l_r == 1 || data->player->turn_direction)

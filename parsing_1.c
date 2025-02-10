@@ -7,6 +7,20 @@ int	ft_isspace(char c)
 	return (0);
 }
 
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	if (arr)
+		free(arr);
+}
+
 void	free_data(t_data *data, char **content ,bool flag)
 {
 	int	i;
@@ -16,7 +30,7 @@ void	free_data(t_data *data, char **content ,bool flag)
 	contentlen = 0;
 	while (content && content[contentlen])
 		contentlen++;
-	if (data->so)
+	if (data->no)
 		free(data->no);
 	if (data->so)
 		free(data->so);
@@ -24,10 +38,7 @@ void	free_data(t_data *data, char **content ,bool flag)
 		free(data->ea);
 	if (data->we)
 		free(data->we);
-	while (content && i < contentlen)
-		free(content[i++]);
-	if (content)
-		free(content);
+	free_arr(content);
 	if (flag == true)
 		err("INVALID INPUT! azabi\n");
 }
@@ -44,7 +55,6 @@ void	get_info(t_data *data)
 		free_data(data, data->map, false);
 		free_data(data, data->maze, true);
 	}
-
 	while (i < data->map_begins)
 	{
 		trimmed_line = ft_strtrim(data->maze[i], " \t\v\f\r\n");
