@@ -10,7 +10,7 @@ MLX_DIR = MLX42/build
 # Libraries and frameworks
 LIBFT = $(LIBFT_DIR)/libft.a
 MLX = $(MLX_DIR)/libmlx42.a
-GLFW_LIB = -L"/Users/isel-azz/.brew/opt/glfw/lib" -lglfw
+GLFW_LIB = -L"/Users/$(USER)/.brew/opt/glfw/lib" -lglfw
 FRAMEWORKS = -O3 -framework Cocoa -framework OpenGL -framework IOKit
 
 # Source files and object files

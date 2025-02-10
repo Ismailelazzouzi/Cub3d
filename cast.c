@@ -9,7 +9,8 @@ void	cast_horizontal(t_data *data, t_ray *ray)
 	{
 		ray->inforays->grid_x = floor (ray->inforays->next_horizontal_x / (double)tile_size);
 		ray->inforays->grid_y = floor (ray->inforays->next_horizontal_y / (double)tile_size);
-		ray->inforays->s = data->map[(int) ray->inforays->grid_y][(int) ray->inforays->grid_x];
+		if(ray->inforays->grid_y < data->rows_num && ray->inforays->grid_x < ft_strlen(data->map[ray->inforays->grid_y]))
+			ray->inforays->s = data->map[(int) ray->inforays->grid_y][(int) ray->inforays->grid_x];
 		if (ray->inforays->s == '1')
 		{
 			ray->inforays->found_horizontal_wall = 1;
@@ -44,7 +45,8 @@ void	cast_vertical(t_data *data, t_ray *ray)
 	{
 		ray->inforays->grid_x = floor(ray->inforays->next_vertical_x /(double)tile_size);
 		ray->inforays->grid_y = floor(ray->inforays->next_vertical_y/ (double)tile_size);
-		ray->inforays->s = data->map[(int) ray->inforays->grid_y][(int) ray->inforays->grid_x];
+		if(ray->inforays->grid_y < data->rows_num && ray->inforays->grid_x < ft_strlen(data->map[ray->inforays->grid_y]))
+			ray->inforays->s = data->map[(int) ray->inforays->grid_y][(int) ray->inforays->grid_x];
 		if (ray->inforays->s == '1')
 		{
 			ray->inforays->found_vertical_wall = 1;

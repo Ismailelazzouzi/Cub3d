@@ -437,13 +437,26 @@ void	check_data_validity(t_data *data)
 }
 
 
+void    free_textures(t_data *data)
+{
+    if (data->textures->north)
+        free(data->textures->north);
+    if (data->textures->east)
+        free(data->textures->east);
+    if (data->textures->west)
+        free(data->textures->west);
+    if (data->textures->south)
+        free(data->textures->south);
+}
+
 int	main(int argc, char **argv)
 {
 	t_data		data;
 	t_player	player;
 	t_colors	colores;
-	int			n_r;
+    int i;
 
+    i = 0;
 	if (argc != 2)
 		err("wrong number of args\n");
 	if (argv[1])
@@ -454,13 +467,9 @@ int	main(int argc, char **argv)
 	check_data_validity(&data);
 	init_raycasting(&data);
 	render_rays(player.rays, &data);
-	n_r = 500;
 	mlx_image_to_window(data.mlx, player.img, 0, 0);
 	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
 	mlx_loop(data.mlx);
-	        for (int i = 0; i < n_r; i++) {
-        free(player.rays[i]);
-    }
 	mlx_terminate(data.mlx);
 	return (0);
 }

@@ -57,18 +57,22 @@ void draw_textured_wall(t_data *data, int x, double draw_start, double draw_end)
 
 void	render_rays(t_ray **rays, t_data *data)
 {
-	int	n_r;
 	int	a;
 	double line_height;
     double draw_begin;
     double draw_end;
 
 	a = 0;
-	n_r = 500;
 	render_background(data);
 	cast_rays(rays, data);
 	init_textures(data);
-	while (a < n_r)
+	// while (a < s_w)
+	// {
+	// 	draw_line(data->player->img, data->player->x, data->player->y,
+	// 		rays[a]->wall_hit_x, rays[a]->wall_hit_y, data->colores->red_color);
+	// 	a++;
+	// }
+	while (a < s_w)
 	{
 		line_height = (32 / rays[a]->distance) * ((s_w/ 2.0) / tan(fov / 2));
 		draw_begin = (s_h / 2) - (line_height / 2);
@@ -82,18 +86,16 @@ void	render_rays(t_ray **rays, t_data *data)
 
 void	cast_rays(t_ray **rays, t_data *data)
 {
-	int		n_r;
 	double	ray_angl; 
 	int		a;
 
-	n_r = 500;
 	ray_angl = data->player->rotation_angle - (fov / 2);
 	a = 0;
-	while (a < n_r)
+	while (a < s_w)
 	{
 		init_ray(rays[a], ray_angl);
 		cast(data, rays[a]);
-		ray_angl += fov / n_r;
+		ray_angl += fov / s_w;
 		a++;
 	}
 }

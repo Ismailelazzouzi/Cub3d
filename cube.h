@@ -29,7 +29,7 @@
 
 #define tile_size 32
 #define fov (60 * (M_PI / 180))
-#define s_w 500
+#define s_w 2000
 #define s_h 600
 #define NORTH 0
 #define SOUTH 1
@@ -109,6 +109,7 @@ typedef struct s_player
 	char	player_id;
 	int		player_x;
 	int		player_y;
+	double	l_r;
 	double x;
     double y;
     double radius;
