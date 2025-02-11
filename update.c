@@ -44,8 +44,11 @@ void	update_1(t_data *data)
 	}
 }
 
-void	free_and_exit(t_data *data)
+void	free_and_exit(void *param)
 {
+	t_data *data;
+
+	data = (t_data *)param;
 	// cleanup_textures(data);
 	// free_arr(data->map);
 	// free_arr(data->maze);

@@ -10,7 +10,7 @@ MLX_DIR = MLX42/build
 # Libraries and frameworks
 LIBFT = $(LIBFT_DIR)/libft.a
 MLX = $(MLX_DIR)/libmlx42.a
-GLFW_LIB = -L"/Users/$(USER)/.brew/opt/glfw/lib" -lglfw
+GLFW_LIB = -lglfw MLX42/build/libmlx42.a
 FRAMEWORKS = -O3 -framework Cocoa -framework OpenGL -framework IOKit
 
 # Source files and object files
@@ -22,7 +22,7 @@ NAME = cub3d
 
 # Rule to create the executable
 $(NAME): $(OBJS) $(LIBFT) $(MLX)
-	$(CC) $(OBJS) $(LIBFT) $(MLX) $(GLFW_LIB) $(FRAMEWORKS) -o $(NAME)
+	$(CC) $(OBJS) $(LIBFT) $(GLFW_LIB) -o $(NAME)
 
 # Rule to create object files from .c files
 %.o: %.c cube.h

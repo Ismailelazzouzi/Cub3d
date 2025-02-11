@@ -476,6 +476,7 @@ int	main(int argc, char **argv)
 	render_rays(player.rays, &data);
 	mlx_image_to_window(data.mlx, player.img, 0, 0);
 	mlx_key_hook(data.mlx, (mlx_keyfunc)update, &data);
+	mlx_close_hook(data.mlx, &free_and_exit, &data);
 	mlx_loop(data.mlx);
 	cleanup_textures(&data);
 	free_data(&data, data.map, false);
