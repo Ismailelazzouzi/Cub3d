@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   casting_1.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: isel-azz <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/11 22:15:35 by isel-azz          #+#    #+#             */
+/*   Updated: 2025/02/11 22:15:39 by isel-azz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cube.h"
 
 void	clear_image(mlx_image_t *img, uint32_t color)
@@ -36,40 +48,29 @@ double	calculate_distance(double x1, double y1, double x2, double y2)
 	return (sqrt(dx * dx + dy * dy)); 
 }
 
-void render_background(t_data *data)
+void	render_background(t_data *data)
 {
 	int	y;
 	int	x;
 
-	data->colores->floor_color = get_rgba(data->f[0], data->f[1], data->f[2], 100);
-	data->colores->cieling_color = get_rgba(data->c[0], data->c[1], data->c[2], 100);
+	data->colores->floor_color
+		= get_rgba(data->f[0], data->f[1], data->f[2], 100);
+	data->colores->cieling_color
+		= get_rgba(data->c[0], data->c[1], data->c[2], 100);
 	y = 0;
-    while (y < s_h)
+	while (y < s_h)
 	{
 		x = 0;
-        while (x < s_w)
+		while (x < s_w)
 		{
-            if (y > s_h / 2)
-                mlx_put_pixel(data->player->img, x, y, data->colores->floor_color);
-            else
-                mlx_put_pixel(data->player->img, x, y, data->colores->cieling_color);
+			if (y > s_h / 2)
+				mlx_put_pixel(data->player->img, x,
+					y, data->colores->floor_color);
+			else
+				mlx_put_pixel(data->player->img, x,
+					y, data->colores->cieling_color);
 			x++;
-        }
+		}
 		y++;
-    }
-}
-
-void draw_rect(mlx_image_t *img, int x, int y, int width, int height, uint32_t color)
-{
-    for (int j = 0; j < height; j++) {  // Loop through height (vertical lines)
-        for (int i = 0; i < width; i++) {  // Loop through width (horizontal lines)
-            int px = x + i;  // Calculate the x-coordinate for each pixel
-            int py = y + j;  // Calculate the y-coordinate for each pixel
-
-            // Ensure pixel is within screen bounds
-            if (px >= 0 && px < (int)img->width && py >= 0 && py < (int)img->height) {
-                mlx_put_pixel(img, px, py, color);  // Draw pixel
-            }
-        }
-    }
+	}
 }

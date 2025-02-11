@@ -156,15 +156,16 @@ void	init_game_data(t_data *data, t_player *player, t_colors *colores);
 void	get_file_content(t_data *data, char *av1);
 void	err(char *str);
 void	check_file_content(t_data *data);
-void	free_data(t_data *data, char **content ,bool flag);
 int		ft_isspace(char c);
 void	free_arr(char **arr);
-void cleanup_textures(t_data *data);
+void	cleanup_textures(t_data *data);
 void	free_and_exit(void *param);
+void	free_arr(char **arr);
+void	free_data(t_data *data, char **content, bool flag);
 
 
 int	get_rgba(int r, int g, int b, int a);
-void put_squer(uint32_t color,mlx_image_t *img,int h, int w,int x, int y);
+void put_squer(uint32_t color,mlx_image_t *img, int x, int y);
 void put_pixel(mlx_image_t *img, int x, int y, int color);
 void draw_circle(mlx_image_t *img, int cx, int cy, int radius, int color);
 void draw_line(mlx_image_t *img, int x1, int y1, int x2, int y2, int color);
@@ -183,5 +184,11 @@ void	render_rays(t_ray **rays, t_data *data);
 void	cast(t_data *data, t_ray *ray);
 void	init_raycasting(t_data *data);
 void	init_textures(t_data *data);
+void	cast_complete(t_data *data, t_ray *ray);
+void	cast_v_complete(t_data *data, t_ray *ray);
+void	cast_b_complete2(t_data *data, t_ray *ray);
+void	cast_b_complete(t_data *data, t_ray *ray);
+void	cast_h_complete(t_data *data, t_ray *ray);
+
 
 #endif

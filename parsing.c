@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: isel-azz <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/11 23:02:27 by isel-azz          #+#    #+#             */
+/*   Updated: 2025/02/11 23:02:30 by isel-azz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cube.h"
 
 void	err(char *str)
@@ -10,8 +22,8 @@ void	err(char *str)
 int	get_file_height(char *av1)
 {
 	char	*line;
-	int	fd;
-	int	i;
+	int		fd;
+	int		i;
 
 	i = 0;
 	fd = open(av1, O_RDONLY);
@@ -48,11 +60,6 @@ void	init_game_data(t_data *data, t_player *player, t_colors *colores)
 	data->playercount = 0;
 	data->killflag = false;
 	data->shootflag = false;
-	data->colores->black_color = get_rgba(0,0,0,255);
-	data->colores->white_color = get_rgba(255,250,255,255);
-	data->colores->gray_color = get_rgba(128,128,128,255);
-	data->colores->red_color = get_rgba(255,0,0,255);
-	data->colores->green_color = get_rgba(0,255,0,255);
 	ft_memset(&data->c, 0, sizeof(data->c));
 	ft_memset(&data->f, 0, sizeof(data->c));
 }
@@ -82,4 +89,3 @@ void	get_file_content(t_data *data, char *av1)
 	data->maze[i] = NULL;
 	close(fd);
 }
-
