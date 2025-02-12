@@ -23,8 +23,8 @@ void	put_squer(uint32_t color, mlx_image_t *img, int x, int y)
 	int	b;
 	int	x1;
 
-	a = y + (tile_size - 1);
-	b = x + (tile_size - 1);
+	a = y + (TILE_SIZE - 1);
+	b = x + (TILE_SIZE - 1);
 	x1 = x;
 	while (y < a)
 	{
@@ -40,6 +40,6 @@ void	put_squer(uint32_t color, mlx_image_t *img, int x, int y)
 
 void	put_pixel(mlx_image_t *img, int x, int y, int color)
 {
-	if (x >= 0 && x < s_w && y >= 0 && y < s_h)
+	if (x >= 0 && x < S_W && y >= 0 && y < S_H)
 		mlx_put_pixel(img, x, y, color);
 }

@@ -35,10 +35,10 @@ mlx_texture_t	*innit_draw(t_data *data, t_ray *ray)
 	ray->texture = NULL;
 	set_texture(data, ray);
 	if (ray->was_hit_vertical)
-		ray->tex_x = (int)((ray->wall_hit_y / tile_size) * ray->texture->width)
+		ray->tex_x = (int)((ray->wall_hit_y / TILE_SIZE) * ray->texture->width)
 			% ray->texture->width;
 	else
-		ray->tex_x = (int)((ray->wall_hit_x / tile_size) * ray->texture->width)
+		ray->tex_x = (int)((ray->wall_hit_x / TILE_SIZE) * ray->texture->width)
 			% ray->texture->width;
 	if (ray->tex_x < 0)
 		ray->tex_x += ray->texture->width;
@@ -63,7 +63,7 @@ void	draw_textured_wall(t_data *data, int x,
 	y = (int)draw_start;
 	while (y < (int)draw_end)
 	{
-		if (y >= 0 && y < s_h && x >= 0 && x < s_w)
+		if (y >= 0 && y < S_H && x >= 0 && x < S_W)
 		{
 			data->ray->tex_y = (int)tex_pos & (data->ray->texture->height - 1);
 			pixel = &data->ray->texture->pixels[
@@ -88,10 +88,11 @@ void	render_rays(t_ray **rays, t_data *data)
 	a = 0;
 	render_background(data);
 	cast_rays(rays, data);
-	while (a < s_w)
+	while (a < S_W)
 	{
-		line_height = (32 / rays[a]->distance) * ((s_w / 2.0) / tan(fov / 2));
-		draw_begin = (s_h / 2) - (line_height / 2);
+		line_height = (32 / rays[a]->distance)
+			* ((S_W / 2.0) / tan(data->fov / 2));
+		draw_begin = (S_H / 2) - (line_height / 2);
 		draw_end = draw_begin + line_height;
 		data->ray = rays[a];
 		draw_textured_wall(data, a, draw_begin, draw_end);
@@ -104,13 +105,13 @@ void	cast_rays(t_ray **rays, t_data *data)
 	double	ray_angl; 
 	int		a;
 
-	ray_angl = data->player->rotation_angle - (fov / 2);
+	ray_angl = data->player->rotation_angle - (data->fov / 2);
 	a = 0;
-	while (a < s_w)
+	while (a < S_W)
 	{
 		init_ray(rays[a], ray_angl);
 		cast(data, rays[a]);
-		ray_angl += fov / s_w;
+		ray_angl += data->fov / S_W;
 		a++;
 	}
 }

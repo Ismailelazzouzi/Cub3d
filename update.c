@@ -1,55 +1,81 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   update.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: isel-azz <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/12 20:17:03 by isel-azz          #+#    #+#             */
+/*   Updated: 2025/02/12 20:17:06 by isel-azz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cube.h"
-
-// void	update_2(t_data *data, int i, int j)
-// {
-// 	int	tile_x;
-// 	int	tile_y;
-
-// 	tile_x = j * tile_size;
-// 	tile_y = i * tile_size;
-// 	if (data->map[i][j] == '0' || data->map[i][j] == data->player->player_id)
-// 		put_squer(data->colores->white_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
-// 	else if (data->map[i][j] == '1')
-// 		put_squer(data->colores->gray_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
-// 	else if (data->map[i][j] != '0' && data->map[i][j] != '1')
-// 		put_squer(data->colores->red_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
-// }
-
-// void	update_1(t_data *data)
-// {
-// 	int	i;
-// 	int	j;
-// 	int	tile_x;
-// 	int	tile_y;
-
-// 	i = 0;
-// 	tile_x = 0;
-// 	tile_y = 0;
-// 	while (i < data->rows_num)
-// 	{
-// 		j = 0;
-// 		while (j < (int)ft_strlen(data->map[i]) - 1)
-// 		{
-// 			update_2(data, i, j);
-// 			j++;
-// 		}
-// 		while (j < data->column_num)
-// 		{
-// 			tile_x = j * tile_size;
-// 			tile_y = i * tile_size;
-// 			put_squer(data->colores->red_color, data->player->img, tile_size - 1, tile_size - 1, tile_x, tile_y);
-// 			j++;
-// 		}
-// 		i++;
-// 	}
-// }
 
 void	free_and_exit(void *param)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = (t_data *)param;
 	exit(0);
+}
+
+void	keys_effects(struct mlx_key_data key_data, t_data *data)
+{
+	data->player->l_r = 0;
+	data->player->turn_direction = 0;
+	data->player->walk_direction = 0;
+	if (key_data.key == MLX_KEY_RIGHT)
+		data->player->turn_direction = 2;
+	if (key_data.key == MLX_KEY_LEFT)
+		data->player->turn_direction = -2;
+	if (key_data.key == MLX_KEY_D)
+		data->player->l_r = 1;
+	if (key_data.key == MLX_KEY_A)
+		data->player->l_r = -1;
+	if (key_data.key == MLX_KEY_W)
+		data->player->walk_direction = 2;
+	if (key_data.key == MLX_KEY_S)
+		data->player->walk_direction = -2;
+	if (key_data.key == MLX_KEY_ESCAPE)
+		free_and_exit(data);
+}
+
+void	update_complete2(t_data *data, double *x1, double *y1)
+{
+	if (data->player->l_r == 1 || data->player->turn_direction)
+	{
+		*x1 = data->player->x - sin(data->player->rotation_angle)
+			* (data->player->move_speed * 2);
+		*y1 = data->player->y + cos(data->player->rotation_angle)
+			* (data->player->move_speed * 2);
+	}
+	if (data->player->l_r == -1 || data->player->turn_direction)
+	{
+		*x1 = data->player->x + sin(data->player->rotation_angle)
+			* (data->player->move_speed * 2);
+		*y1 = data->player->y - cos(data->player->rotation_angle)
+			* (data->player->move_speed * 2);
+	}
+}
+
+void	update_complete(t_data *data, double *x1, double *y1, double *move_step)
+{
+	if (data->player->walk_direction != 0 || data->player->turn_direction)
+	{
+		*move_step = data->player->walk_direction * data->player->move_speed;
+		*x1 = data->player->x
+			+ cos(data->player->rotation_angle) * (*move_step);
+		*y1 = data->player->y
+			+ sin(data->player->rotation_angle) * (*move_step);
+	}
+	else if (data->player->l_r != 0 || data->player->turn_direction)
+		update_complete2(data, x1, y1);
+	else
+	{
+		*x1 = data->player->x;
+		*y1 = data->player->y;
+	}
 }
 
 void	update(struct mlx_key_data key_data, t_data *data)
@@ -61,58 +87,17 @@ void	update(struct mlx_key_data key_data, t_data *data)
 
 	x1 = 0;
 	y1 = 0;
-	data->player->l_r = 0;
-	data->player->turn_direction = 0;
-	data->player->walk_direction = 0;
-	if (key_data.key == MLX_KEY_RIGHT)
-		data->player->turn_direction = 2;
-	if (key_data.key == MLX_KEY_LEFT)
-		data->player->turn_direction = -2;
-	if (key_data.key == MLX_KEY_D )
-        data->player->l_r= 1;
-    if (key_data.key == MLX_KEY_A )
-        data->player->l_r= -1;
-	if (key_data.key == MLX_KEY_W)
-		data->player->walk_direction = 2;
-	if (key_data.key == MLX_KEY_S)
-		data->player->walk_direction = -2;
-	if (key_data.key == MLX_KEY_ESCAPE)
-		free_and_exit(data);
-	
+	keys_effects(key_data, data);
 	clear_image(data->player->img, get_rgba(0, 0, 0, 255));
 	data->player->rotation_angle += 
 		data->player->turn_direction * data->player->retation_speed;
-	if(data->player->walk_direction != 0 || data->player->turn_direction)
-    {
-		move_step = data->player->walk_direction * data->player->move_speed;
-        x1 = data->player->x + cos(data->player->rotation_angle) * move_step;
-        y1 = data->player->y + sin(data->player->rotation_angle) * move_step;
-    }
-	else if(data->player->l_r !=0 || data->player->turn_direction)
-    {
-        if(data->player->l_r == 1 || data->player->turn_direction)
-        {
-             x1 = data->player->x - sin(data->player->rotation_angle) * (data->player->move_speed * 2);
-             y1 = data->player->y + cos(data->player->rotation_angle) * (data->player->move_speed * 2);
-        }
-        if(data->player->l_r == -1 || data->player->turn_direction)
-        {
-            x1 = data->player->x + sin(data->player->rotation_angle) * (data->player->move_speed * 2);
-        	 y1 = data->player->y - cos(data->player->rotation_angle) * (data->player->move_speed * 2);
-        }
-             
-    }
-	else
+	update_complete(data, &x1, &y1, &move_step);
+	s = data->map
+	[(int)floor(y1 / (double)TILE_SIZE)][(int)floor(x1 / (double)TILE_SIZE)];
+	if (s == '0' || s == data->player->player_id)
 	{
-		x1 = data->player->x;
-		y1 = data->player->y;
+		data->player->x = x1;
+		data->player->y = y1;
 	}
-	s = data->map[(int)floor(y1 /(double)tile_size)][(int)floor(x1 /(double)tile_size)];
-
-	if(s == '0' || s == data->player->player_id)
-    {
-        data->player->x = x1;
-        data->player->y = y1;
-    }
 	render_rays(data->player->rays, data);
 }

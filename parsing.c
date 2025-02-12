@@ -44,6 +44,7 @@ void	init_game_data(t_data *data, t_player *player, t_colors *colores)
 {
 	data->player = player;
 	data->colores = colores;
+	data->fov = (60 * (M_PI / 180));
 	data->no = NULL;
 	data->so = NULL;
 	data->ea = NULL;
@@ -88,4 +89,18 @@ void	get_file_content(t_data *data, char *av1)
 	}
 	data->maze[i] = NULL;
 	close(fd);
+}
+
+void	free_splitted(char **splitted)
+{
+	int	i;
+
+	i = 0;
+	while (splitted && splitted[i] && i < 3)
+	{
+		free(splitted[i]);
+		i++;
+	}
+	if (splitted)
+		free(splitted);
 }

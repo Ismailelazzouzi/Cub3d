@@ -58,12 +58,12 @@ void	render_background(t_data *data)
 	data->colores->cieling_color
 		= get_rgba(data->c[0], data->c[1], data->c[2], 100);
 	y = 0;
-	while (y < s_h)
+	while (y < S_H)
 	{
 		x = 0;
-		while (x < s_w)
+		while (x < S_W)
 		{
-			if (y > s_h / 2)
+			if (y > S_H / 2)
 				mlx_put_pixel(data->player->img, x,
 					y, data->colores->floor_color);
 			else

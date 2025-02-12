@@ -15,9 +15,9 @@
 void	cast_h_complete(t_data *data, t_ray *ray)
 {
 	ray->inforays->grid_x = 
-		floor (ray->inforays->next_horizontal_x / (double)tile_size);
+		floor (ray->inforays->next_horizontal_x / (double)TILE_SIZE);
 	ray->inforays->grid_y = 
-		floor (ray->inforays->next_horizontal_y / (double)tile_size);
+		floor (ray->inforays->next_horizontal_y / (double)TILE_SIZE);
 	if (ray->inforays->grid_y < data->rows_num
 		&& ray->inforays->grid_x
 		< ft_strlen(data->map[ray->inforays->grid_y]))
@@ -32,7 +32,7 @@ void	cast_b_complete(t_data *data, t_ray *ray)
 	ray->distance = ray->inforays->h_d;
 	ray->was_hit_vertical = 0;
 	ray->color = get_rgba(128, 160, 128, 255);
-	ray->texture_x = fmod(ray->wall_hit_x, tile_size) / tile_size;
+	ray->texture_x = fmod(ray->wall_hit_x, TILE_SIZE) / TILE_SIZE;
 }
 
 void	cast_b_complete2(t_data *data, t_ray *ray)
@@ -41,7 +41,7 @@ void	cast_b_complete2(t_data *data, t_ray *ray)
 	ray->wall_hit_y = ray->inforays->vertical_hit_y;
 	ray->distance = ray->inforays->v_d;
 	ray->color = get_rgba(255, 0, 0, 255);
-	ray->texture_x = fmod(ray->wall_hit_y, tile_size) / tile_size;
+	ray->texture_x = fmod(ray->wall_hit_y, TILE_SIZE) / TILE_SIZE;
 	ray->was_hit_vertical = 1;
 	if (ray->is_fasing_right)
 		ray->wall_direction = 2;
@@ -52,9 +52,9 @@ void	cast_b_complete2(t_data *data, t_ray *ray)
 void	cast_v_complete(t_data *data, t_ray *ray)
 {
 	ray->inforays->grid_x
-		= floor(ray->inforays->next_vertical_x / (double)tile_size);
+		= floor(ray->inforays->next_vertical_x / (double)TILE_SIZE);
 	ray->inforays->grid_y
-		= floor(ray->inforays->next_vertical_y / (double)tile_size);
+		= floor(ray->inforays->next_vertical_y / (double)TILE_SIZE);
 	if (ray->inforays->grid_y < data->rows_num 
 		&& ray->inforays->grid_x
 		< ft_strlen(data->map[ray->inforays->grid_y]))
@@ -66,8 +66,8 @@ void	cast_complete(t_data *data, t_ray *ray)
 {
 	if (ray->is_fasing_right == 1)
 		ray->inforays->first_intersection_x
-			= (floor(data->player->x / tile_size) * tile_size) + tile_size;
+			= (floor(data->player->x / TILE_SIZE) * TILE_SIZE) + TILE_SIZE;
 	else if (ray->is_fasing_left == 1)
 		ray->inforays->first_intersection_x
-			= (floor(data->player->x / tile_size) * tile_size) - 0.00000001;
+			= (floor(data->player->x / TILE_SIZE) * TILE_SIZE) - 0.00000001;
 }

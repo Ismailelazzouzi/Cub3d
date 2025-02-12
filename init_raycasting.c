@@ -63,19 +63,19 @@ void	init_raycasting(t_data *data)
 
 	i = 0;
 	data->player->x = (double)data->player->player_x
-		* tile_size + tile_size / 2;
+		* TILE_SIZE + TILE_SIZE / 2;
 	data->player->y = (double)data->player->player_y
-		* tile_size + tile_size / 2;
+		* TILE_SIZE + TILE_SIZE / 2;
 	data->player->radius = 3;
 	set_direction(data->player, data->player->player_id);
 	data->player->turn_direction = 0;
 	data->player->walk_direction = 0;
 	data->player->move_speed = 4;
 	data->player->retation_speed = 2 * (M_PI / 180);
-	data->player->rays = malloc(s_w * sizeof(t_ray *));
-	while (i < s_w)
+	data->player->rays = malloc(S_W * sizeof(t_ray *));
+	while (i < S_W)
 		data->player->rays[i++] = malloc(sizeof(t_ray));
-	data->mlx = mlx_init(s_w, s_h, "MLX42", true);
-	data->player->img = mlx_new_image(data->mlx, s_w, s_h);
+	data->mlx = mlx_init(S_W, S_H, "MLX42", true);
+	data->player->img = mlx_new_image(data->mlx, S_W, S_H);
 	init_textures(data);
 }
