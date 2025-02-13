@@ -14,18 +14,18 @@
 
 void	cast_h_complete(t_data *data, t_ray *ray)
 {
-	ray->inforays->grid_x = 
-		floor (ray->inforays->next_horizontal_x / (double)TILE_SIZE);
-	ray->inforays->grid_y = 
-		floor (ray->inforays->next_horizontal_y / (double)TILE_SIZE);
+	ray->inforays->grid_x
+		= floor (ray->inforays->next_horizontal_x / (double)TILE_SIZE);
+	ray->inforays->grid_y
+		= floor (ray->inforays->next_horizontal_y / (double)TILE_SIZE);
 	if (ray->inforays->grid_y < data->rows_num
 		&& ray->inforays->grid_x
-		< ft_strlen(data->map[ray->inforays->grid_y]))
+		< (double)ft_strlen(data->map[ray->inforays->grid_y]))
 		ray->inforays->s = data->map[(int) ray->inforays->grid_y]
 		[(int) ray->inforays->grid_x];
 }
 
-void	cast_b_complete(t_data *data, t_ray *ray)
+void	cast_b_complete(t_ray *ray)
 {
 	ray->wall_hit_x = ray->inforays->horizontal_hit_x;
 	ray->wall_hit_y = ray->inforays->horizontal_hit_y;
@@ -35,7 +35,7 @@ void	cast_b_complete(t_data *data, t_ray *ray)
 	ray->texture_x = fmod(ray->wall_hit_x, TILE_SIZE) / TILE_SIZE;
 }
 
-void	cast_b_complete2(t_data *data, t_ray *ray)
+void	cast_b_complete2(t_ray *ray)
 {
 	ray->wall_hit_x = ray->inforays->vertical_hit_x;
 	ray->wall_hit_y = ray->inforays->vertical_hit_y;
@@ -55,9 +55,9 @@ void	cast_v_complete(t_data *data, t_ray *ray)
 		= floor(ray->inforays->next_vertical_x / (double)TILE_SIZE);
 	ray->inforays->grid_y
 		= floor(ray->inforays->next_vertical_y / (double)TILE_SIZE);
-	if (ray->inforays->grid_y < data->rows_num 
+	if (ray->inforays->grid_y < data->rows_num
 		&& ray->inforays->grid_x
-		< ft_strlen(data->map[ray->inforays->grid_y]))
+		< (double)ft_strlen(data->map[ray->inforays->grid_y]))
 		ray->inforays->s = data->map[(int) ray->inforays->grid_y]
 		[(int) ray->inforays->grid_x];
 }

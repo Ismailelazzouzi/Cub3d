@@ -89,8 +89,8 @@ void	update(struct mlx_key_data key_data, t_data *data)
 	y1 = 0;
 	keys_effects(key_data, data);
 	clear_image(data->player->img, get_rgba(0, 0, 0, 255));
-	data->player->rotation_angle += 
-		data->player->turn_direction * data->player->retation_speed;
+	data->player->rotation_angle
+		+= data->player->turn_direction * data->player->retation_speed;
 	update_complete(data, &x1, &y1, &move_step);
 	s = data->map
 	[(int)floor(y1 / (double)TILE_SIZE)][(int)floor(x1 / (double)TILE_SIZE)];

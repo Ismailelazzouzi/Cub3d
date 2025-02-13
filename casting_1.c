@@ -45,7 +45,7 @@ double	calculate_distance(double x1, double y1, double x2, double y2)
 
 	dx = x2 - x1;
 	dy = y2 - y1;
-	return (sqrt(dx * dx + dy * dy)); 
+	return (sqrt(dx * dx + dy * dy));
 }
 
 void	render_background(t_data *data)

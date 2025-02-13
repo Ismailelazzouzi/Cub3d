@@ -181,7 +181,7 @@ void	init_raycasting(t_data *data);
 void	init_textures(t_data *data);
 void	cast_complete(t_data *data, t_ray *ray);
 void	cast_v_complete(t_data *data, t_ray *ray);
-void	cast_b_complete2(t_data *data, t_ray *ray);
-void	cast_b_complete(t_data *data, t_ray *ray);
+void	cast_b_complete2(t_ray *ray);
+void	cast_b_complete(t_ray *ray);
 void	cast_h_complete(t_data *data, t_ray *ray);
 #endif

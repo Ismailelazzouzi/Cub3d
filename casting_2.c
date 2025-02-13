@@ -42,8 +42,8 @@ mlx_texture_t	*innit_draw(t_data *data, t_ray *ray)
 			% ray->texture->width;
 	if (ray->tex_x < 0)
 		ray->tex_x += ray->texture->width;
-	if ((!ray->was_hit_vertical && ray->is_facing_down) || 
-		(ray->was_hit_vertical && ray->is_fasing_left))
+	if ((!ray->was_hit_vertical && ray->is_facing_down)
+		|| (ray->was_hit_vertical && ray->is_fasing_left))
 		ray->tex_x = (int)ray->texture->width - ray->tex_x - 1;
 	return (ray->texture);
 }
@@ -102,7 +102,7 @@ void	render_rays(t_ray **rays, t_data *data)
 
 void	cast_rays(t_ray **rays, t_data *data)
 {
-	double	ray_angl; 
+	double	ray_angl;
 	int		a;
 
 	ray_angl = data->player->rotation_angle - (data->fov / 2);

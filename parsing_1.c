@@ -100,7 +100,6 @@ void	check_file_content1(t_data *data)
 void	check_file_content(t_data *data)
 {
 	int		len;
-	int		i;
 	char	*trimmed_line;
 
 	len = data->fileheight - 1;

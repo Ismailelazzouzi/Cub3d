@@ -77,9 +77,9 @@ void	cast_horizontal(t_data *data, t_ray *ray)
 	ray->inforays->xa = ray->inforays->ya / tan(ray->ray_angle);
 	ray->inforays->next_horizontal_x = ray->inforays->first_intersection_x;
 	ray->inforays->next_horizontal_y = ray->inforays->first_intersaction_y;
-	while (ray->inforays->next_horizontal_x <= (data->column_num * 32) 
+	while (ray->inforays->next_horizontal_x <= (data->column_num * 32)
 		&& ray->inforays->next_horizontal_x >= 0
-		&& ray->inforays->next_horizontal_y <= (data->rows_num * 32) 
+		&& ray->inforays->next_horizontal_y <= (data->rows_num * 32)
 		&& ray->inforays->next_horizontal_y >= 0)
 	{
 		cast_h_complete(data, ray);
@@ -151,17 +151,15 @@ void	cast_both(t_data *data, t_ray *ray)
 				ray->inforays->vertical_hit_y);
 	if (ray->inforays->h_d < ray->inforays->v_d)
 	{
-		cast_b_complete(data, ray);
+		cast_b_complete(ray);
 		if (ray->is_facing_down)
 			ray->wall_direction = 0;
 		else
 			ray->wall_direction = 1;
 	}
 	else
-	{
-		cast_b_complete2(data, ray);
-	}
-	ray->distance *= cos(ray->ray_angle - data->player->rotation_angle); 
+		cast_b_complete2(ray);
+	ray->distance *= cos(ray->ray_angle - data->player->rotation_angle);
 }
 
 void	cast(t_data *data, t_ray *ray)

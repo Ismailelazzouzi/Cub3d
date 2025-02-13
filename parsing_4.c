@@ -38,7 +38,6 @@ void	fill_illusion(t_data *data, char **illusion)
 void	create_illusion(t_data *data)
 {
 	int		i;
-	int		j;
 	char	**illusion;
 
 	illusion = malloc((data->rows_num + 1) * sizeof(char *));
