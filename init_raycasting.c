@@ -73,8 +73,14 @@ void	init_raycasting(t_data *data)
 	data->player->move_speed = 4;
 	data->player->retation_speed = 2 * (M_PI / 180);
 	data->player->rays = malloc(S_W * sizeof(t_ray *));
+	if (!data->player->rays)
+		free_and_exit(data);
 	while (i < S_W)
-		data->player->rays[i++] = malloc(sizeof(t_ray));
+	{
+		data->player->rays[i] = malloc(sizeof(t_ray));
+		if (!data->player->rays[i++])
+			free_and_exit(data);
+	}
 	data->mlx = mlx_init(S_W, S_H, "MLX42", true);
 	data->player->img = mlx_new_image(data->mlx, S_W, S_H);
 	init_textures(data);
